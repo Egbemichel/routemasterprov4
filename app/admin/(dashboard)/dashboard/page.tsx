@@ -112,7 +112,7 @@ const Orders = () => {
   const [toast, setToast] = useState<ToastState>(null);
 
   // Helper for showing toast
-  const showToast = (type: ToastType, title: string, subtitle?: string, actions?: ToastAction1[], onClose?: () => void) => {
+  const showToast = (type: ToastType, title: string, subtitle?: string, actions?: ToastAction[], onClose?: () => void) => {
     setToast({ type, title, subtitle, actions, onClose });
   };
   const [formData, setFormData] = useState({
@@ -145,7 +145,7 @@ const Orders = () => {
   const [carriers, setCarriers] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    const fetchCarriers = async () => {
+    (async () => {
       try {
         const snapshot = await getDocs(collection(db, "couriers"));
         const list = snapshot.docs.map((doc) => ({
@@ -156,8 +156,7 @@ const Orders = () => {
       } catch (error) {
         console.error("Error fetching carriers:", error);
       }
-    };
-    fetchCarriers();
+    })();
   }, []);
 
   useEffect(() => {
@@ -178,12 +177,14 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    packages.forEach((pkg) => {
-      if (pkg.carrierId) {
-        fetchCarrierName(pkg.carrierId);
+    (async () => {
+      for (const pkg of packages) {
+        if (pkg.carrierId) {
+          await fetchCarrierName(pkg.carrierId);
+        }
       }
-    });
-  });
+    })();
+  }, [packages]);
 
   const handleChange = (
       e: React.ChangeEvent<
