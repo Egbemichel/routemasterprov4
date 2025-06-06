@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import FaviconSwitcher from "@/usercomponents/FaviconSwitcher";
 import React from "react";
 import MainLayout from "@/usercomponents/MainLayout";
+import dynamic from "next/dynamic";
+
+
+const ClientWrapper = dynamic(() => import('@/usercomponents/ClientWrapper'), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "RouteMasterPro",
@@ -21,7 +26,7 @@ export default function RootLayout({
     </head>
       <body
       >
-      <FaviconSwitcher />
+      <ClientWrapper />
       <MainLayout>{children}</MainLayout>
       </body>
     </html>
