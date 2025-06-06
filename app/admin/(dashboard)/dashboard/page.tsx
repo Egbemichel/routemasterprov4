@@ -31,7 +31,6 @@ import { geocodeAddress } from "@/app/utils/geocodeAddress";
 import Image from "next/image";
 import jsPDFInvoiceTemplate from "jspdf-invoice-template";
 import { getDoc } from "firebase/firestore";
-import ToastNotification from "@/usercomponents/ToastNotifications"; // Adjust path as needed
 
 
 type Coordinates = {
