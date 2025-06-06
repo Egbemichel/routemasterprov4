@@ -4,6 +4,7 @@ import Navbar from "@/usercomponents/Navbar";
 import Footer from "@/usercomponents/Footer";
 import Image from "next/image";
 import React from "react";
+import FaviconSwitcher from "@/usercomponents/FaviconSwitcher";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -17,6 +18,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     return (
         <>
             {showNavFooter && <Navbar />}
+            <FaviconSwitcher/>
             <main>{children}</main>
             {showNavFooter && (
                 <Footer
