@@ -39,7 +39,7 @@ export default function StatsComponent() {
                 <div className="w-full md:w-1/2">
                     <div className="relative w-full aspect-[3/4] rounded-[2rem] overflow-hidden">
                         <Image
-                            src="/images/image.svg"
+                            src="/images/image10.jpg"
                             alt="Packages being delivered"
                             fill
                             className="object-cover"

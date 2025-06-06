@@ -42,7 +42,7 @@ function Home() {
             rightColumnClassName="bg-greay-color rounded-[55px]"
             rightColumnContent={
                 <Image
-                    src="/images/image.svg"
+                    src="/images/image8.jpg"
                     alt="Company Images"
                     width={575}
                     height={348}
@@ -69,7 +69,7 @@ function Home() {
             rightColumnClassName="bg-greay-color rounded-[55px]"
             rightColumnContent={
                 <Image
-                    src="/images/image.svg"
+                    src="/images/image9.jpg"
                     alt="Company Images"
                     width={575}
                     height={348}

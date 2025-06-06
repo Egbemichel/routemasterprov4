@@ -1,11 +1,22 @@
+import Image from "next/image";
 import {
     Carousel,
     CarouselContent,
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-} from "@/components/ui/carousel"
-import { Card, CardContent } from "@/components/ui/card"
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
+
+const imageUrls = [
+    "/images/image1.jpg",
+    "/images/image2.png",
+    "/images/image3.jpg",
+    "/images/image4.jpg",
+    "/images/image5.jpg",
+    "/images/image6.png",
+    "/images/image7.png",
+];
 
 const CarouselContainer = () => {
     return (
@@ -17,12 +28,18 @@ const CarouselContainer = () => {
             }}
         >
             <CarouselContent className="-ml-1">
-                {Array.from({ length: 7 }).map((_, index) => (
+                {imageUrls.map((src, index) => (
                     <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
                         <div className="p-1">
-                            <Card>
-                                <CardContent className="flex aspect-square items-center justify-center p-6">
-                                    <span className="text-2xl font-semibold">{index + 1}</span>
+                            <Card className="border-none">
+                                <CardContent className="flex aspect-square items-center justify-center p-0">
+                                    <Image
+                                        src={src}
+                                        alt={`Slide ${index + 1}`}
+                                        width={100}
+                                        height={100}
+                                        className="object-cover w-full h-full rounded-md"
+                                    />
                                 </CardContent>
                             </Card>
                         </div>
@@ -32,6 +49,7 @@ const CarouselContainer = () => {
             <CarouselPrevious />
             <CarouselNext />
         </Carousel>
-    )
-}
+    );
+};
+
 export default CarouselContainer;
