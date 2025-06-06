@@ -184,7 +184,7 @@ const Orders = () => {
         }
       }
     })();
-  }, [packages]);
+  },);
 
   const handleChange = (
       e: React.ChangeEvent<
