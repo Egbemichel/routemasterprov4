@@ -1,9 +1,9 @@
 // app/admin/dashboard/page.tsx
-'use client';
+"use client";
 
-import React, {useEffect, useState} from 'react';
-import AppSidebar from '@/components/app-sidebar';
-import { SidebarInset, SidebarProvider} from '@/components/ui/sidebar';
+import React, { useEffect, useState } from "react";
+import AppSidebar from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,23 +11,33 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import Button from '@/usercomponents/Button'
-import {AdminView} from "@/app/types/view";
-import {addDoc, collection, deleteDoc, doc, getCountFromServer, getDocs, setDoc, updateDoc} from "@firebase/firestore";
-import {db} from "@/lib/firebaseClient";
-import {geocodeAddress} from "@/app/utils/geocodeAddress";
-import Image from 'next/image'
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import Button from "@/usercomponents/Button";
+import { AdminView } from "@/app/types/view";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getCountFromServer,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "@firebase/firestore";
+import { db } from "@/lib/firebaseClient";
+import { geocodeAddress } from "@/app/utils/geocodeAddress";
+import Image from "next/image";
 import jsPDFInvoiceTemplate from "jspdf-invoice-template";
-import {getDoc} from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
+import ToastNotification from "@/usercomponents/ToastNotifications"; // Adjust path as needed
+
 
 type Coordinates = {
   latitude: number;
   longitude: number;
 };
-
 
 type PackageData = {
   comment: string;
@@ -63,11 +73,11 @@ const DashboardOverview = () => {
   useEffect(() => {
     async function fetchTotalPackages() {
       try {
-        const coll = collection(db, 'packages');
+        const coll = collection(db, "packages");
         const snapshot = await getCountFromServer(coll);
         setTotalPackages(snapshot.data().count);
       } catch (error) {
-        console.error('Error fetching package count:', error);
+        console.error("Error fetching package count:", error);
       }
     }
     fetchTotalPackages();
@@ -76,48 +86,66 @@ const DashboardOverview = () => {
   return (
       <div>
         <h1 className="text-xl font-bold">Dashboard</h1>
-        <p>Total Packages: {totalPackages !== null ? totalPackages : 'Loading...'}</p>
+        <p>
+          Total Packages: {totalPackages !== null ? totalPackages : "Loading..."}
+        </p>
       </div>
-  )
-}
+  );
+};
 const Orders = () => {
   const [carrierNames, setCarrierNames] = useState<Record<string, string>>({});
+  const [toast, setToast] = useState<{
+    type: "success" | "error" | "warning" | "info";
+    title: string;
+    subtitle?: string;
+    actions?: any[];
+    onClose?: () => void;
+  } | null>(null);
+
+  // Helper for showing toast
+  const showToast = (type: "success" | "error" | "warning" | "info", title: string, subtitle?: string, actions?: any[], onClose?: () => void) => {
+    setToast({ type, title, subtitle, actions, onClose });
+  };
   const [formData, setFormData] = useState({
-    packageOrigin: '',
-    destination: '',
-    receiverName: '',
-    receiverEmail: '',
-    receiverPhone: '',
-    receiverAddress: '',
-    packageContent: '',
-    senderName: '',
-    senderEmail: '',
-    senderPhone: '',
-    senderAddress: '',
-    weightKg: '',           // string here, parsed later
-    quantity: '',
-    carrierId: '',
-    deliveryType: 'national', // default
-    transportMode: '',
-    expectedDeliveryDate: '',
-    departureTime: '',
-    comment: '',
+    packageOrigin: "",
+    destination: "",
+    receiverName: "",
+    receiverEmail: "",
+    receiverPhone: "",
+    receiverAddress: "",
+    packageContent: "",
+    senderName: "",
+    senderEmail: "",
+    senderPhone: "",
+    senderAddress: "",
+    weightKg: "", // string here, parsed later
+    quantity: "",
+    carrierId: "",
+    deliveryType: "national", // default
+    transportMode: "",
+    expectedDeliveryDate: "",
+    departureTime: "",
+    comment: "",
   });
 
   const [packages, setPackages] = useState<PackageData[]>([]);
-  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(
+      null
+  );
   const [editMode, setEditMode] = useState(false);
   const [carriers, setCarriers] = useState<{ id: string; name: string }[]>([]);
-
 
   useEffect(() => {
     const fetchCarriers = async () => {
       try {
-        const snapshot = await getDocs(collection(db, 'couriers'));
-        const list = snapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name }));
+        const snapshot = await getDocs(collection(db, "couriers"));
+        const list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+        }));
         setCarriers(list);
       } catch (error) {
-        console.error('Error fetching carriers:', error);
+        console.error("Error fetching carriers:", error);
       }
     };
     fetchCarriers();
@@ -126,61 +154,61 @@ const Orders = () => {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const packageCollection = collection(db, 'packages');
+        const packageCollection = collection(db, "packages");
         const snapshot = await getDocs(packageCollection);
-        const packageList: PackageData[] = snapshot.docs.map(doc => ({
+        const packageList: PackageData[] = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as PackageData[];
         setPackages(packageList);
       } catch (error) {
-        console.error('Error fetching packages:', error);
+        console.error("Error fetching packages:", error);
       }
     };
     fetchPackages();
   }, []);
 
   useEffect(() => {
-    packages.forEach(pkg => {
+    packages.forEach((pkg) => {
       if (pkg.carrierId) {
         fetchCarrierName(pkg.carrierId);
       }
     });
-  }, );
+  });
 
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+      e: React.ChangeEvent<
+          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate weight and quantity are numbers
     if (isNaN(Number(formData.weightKg)) || isNaN(Number(formData.quantity))) {
-      alert('Weight and quantity must be valid numbers.');
+      showToast("error", "Invalid Input", "Weight and quantity must be valid numbers.");
       return;
     }
 
-    // Validate required carrierId
     if (!formData.carrierId) {
-      alert('Please select a carrier.');
+      showToast("error", "Missing Carrier", "Please select a carrier.");
       return;
     }
 
-    // Geocode addresses
     const startCoordinates = await geocodeAddress(formData.senderAddress);
     const endCoordinates = await geocodeAddress(formData.receiverAddress);
 
     if (!startCoordinates || !endCoordinates) {
-      alert('Failed to get coordinates for addresses.');
+      showToast("error", "Geocoding Failed", "Failed to get coordinates for addresses.");
       return;
     }
 
     if (editMode && selectedPackageId) {
       try {
-        const packageDoc = doc(db, 'packages', selectedPackageId);
+        const packageDoc = doc(db, "packages", selectedPackageId);
         await updateDoc(packageDoc, {
           ...formData,
           weightKg: Number(formData.weightKg),
@@ -188,104 +216,138 @@ const Orders = () => {
           startCoordinates,
           endCoordinates,
         });
-        alert('Package information updated successfully.');
+        showToast("success", "Package Updated", "Package information updated successfully.");
       } catch (error) {
-        console.error('Update error:', error);
-        alert('Failed to update package.');
+        console.error("Update error:", error);
+        showToast("error", "Update Failed", "Failed to update package.");
       }
     } else {
       const randomDigits = Math.random().toString().slice(2, 16);
       const trackingNumber = `RM${randomDigits}-SHIP`;
 
       try {
-        await setDoc(doc(db, 'packages', trackingNumber), {
+        await setDoc(doc(db, "packages", trackingNumber), {
           ...formData,
           trackingNumber,
           weightKg: Number(formData.weightKg),
           quantity: Number(formData.quantity),
-          status: 'in transit',
+          status: "in transit",
           currentPosition: startCoordinates,
           endCoordinates,
-          reason: '',
+          reason: "",
           expectedDeliveryDate: formData.expectedDeliveryDate,
           departureTime: formData.departureTime,
           comment: formData.comment,
         });
-        alert(`Tracking number generated: ${trackingNumber}`);
+        showToast("success", "Tracking Number Generated", `Tracking number: ${trackingNumber}`);
       } catch (error) {
-        console.error('Create error:', error);
-        alert('Failed to create package.');
+        console.error("Create error:", error);
+        showToast("error", "Creation Failed", "Failed to create package.");
       }
     }
 
+    // ...reset form...
     setFormData({
-      packageOrigin: '',
-      destination: '',
-      receiverName: '',
-      receiverEmail: '',
-      receiverPhone: '',
-      receiverAddress: '',
-      packageContent: '',
-      senderName: '',
-      senderEmail: '',
-      senderPhone: '',
-      senderAddress: '',
-      weightKg: '',
-      quantity: '',
-      carrierId: '',
-      deliveryType: 'national',
-      transportMode: '',
-      expectedDeliveryDate: '',
-      departureTime: '',
-      comment: '',
+      packageOrigin: "",
+      destination: "",
+      receiverName: "",
+      receiverEmail: "",
+      receiverPhone: "",
+      receiverAddress: "",
+      packageContent: "",
+      senderName: "",
+      senderEmail: "",
+      senderPhone: "",
+      senderAddress: "",
+      weightKg: "",
+      quantity: "",
+      carrierId: "",
+      deliveryType: "national",
+      transportMode: "",
+      expectedDeliveryDate: "",
+      departureTime: "",
+      comment: "",
     });
     setEditMode(false);
     setSelectedPackageId(null);
   };
 
+
+  const confirmAction = (title: string, subtitle: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      showToast(
+          "warning",
+          title,
+          subtitle,
+          [
+            {
+              label: "Yes",
+              onClick: () => {
+                setToast(null);
+                resolve(true);
+              },
+              variant: "primary",
+            },
+            {
+              label: "No",
+              onClick: () => {
+                setToast(null);
+                resolve(false);
+              },
+              variant: "secondary",
+            },
+          ],
+          () => {
+            setToast(null);
+            resolve(false);
+          }
+      );
+    });
+  };
+
+
   const handleEdit = (pkg: PackageData) => {
     // When editing, ensure formData fields are strings (weightKg, quantity etc.)
     setFormData({
-      packageOrigin: pkg.packageOrigin || '',
-      destination: pkg.destination || '',
-      receiverName: pkg.receiverName || '',
-      receiverEmail: pkg.receiverEmail || '',
-      receiverPhone: pkg.receiverPhone || '',
-      receiverAddress: pkg.receiverAddress || '',
-      packageContent: pkg.packageContent || '',
-      senderName: pkg.senderName || '',
-      senderEmail: pkg.senderEmail || '',
-      senderPhone: pkg.senderPhone || '',
-      senderAddress: pkg.senderAddress || '',
-      weightKg: pkg.weightKg?.toString() || '',
-      quantity: pkg.quantity?.toString() || '',
-      carrierId: pkg.carrierId || '',
-      deliveryType: pkg.deliveryType || 'national',
-      transportMode: pkg.transportMode || '',
-      expectedDeliveryDate: pkg.expectedDeliveryDate || '',
-      departureTime: pkg.departureTime || '',
-      comment: pkg.comment || '',
+      packageOrigin: pkg.packageOrigin || "",
+      destination: pkg.destination || "",
+      receiverName: pkg.receiverName || "",
+      receiverEmail: pkg.receiverEmail || "",
+      receiverPhone: pkg.receiverPhone || "",
+      receiverAddress: pkg.receiverAddress || "",
+      packageContent: pkg.packageContent || "",
+      senderName: pkg.senderName || "",
+      senderEmail: pkg.senderEmail || "",
+      senderPhone: pkg.senderPhone || "",
+      senderAddress: pkg.senderAddress || "",
+      weightKg: pkg.weightKg?.toString() || "",
+      quantity: pkg.quantity?.toString() || "",
+      carrierId: pkg.carrierId || "",
+      deliveryType: pkg.deliveryType || "national",
+      transportMode: pkg.transportMode || "",
+      expectedDeliveryDate: pkg.expectedDeliveryDate || "",
+      departureTime: pkg.departureTime || "",
+      comment: pkg.comment || "",
     });
     setSelectedPackageId(pkg.id);
     setEditMode(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (typeof window !== 'undefined') {
-      if (window.confirm('Are you sure you want to delete this package?')) {
-        try {
-          await deleteDoc(doc(db, 'packages', id));
-          setPackages(packages.filter(pkg => pkg.id !== id));
-          alert('Package deleted successfully.');
-        } catch (error) {
-          console.error('Delete error:', error);
-          alert('Failed to delete package.');
-        }
-      }
+    const confirmed = await confirmAction(
+        "Delete Package?",
+        "Are you sure you want to delete this package?"
+    );
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "packages", id));
+      setPackages(packages.filter((pkg) => pkg.id !== id));
+      showToast("success", "Package Deleted", "Package deleted successfully.");
+    } catch (error) {
+      console.error("Delete error:", error);
+      showToast("error", "Delete Failed", "Failed to delete package.");
     }
   };
-
-
 
   const fetchCarrierName = async (carrierId: string) => {
     if (carrierNames[carrierId]) return; // Already fetched
@@ -312,7 +374,7 @@ const Orders = () => {
         [carrierId]: carrierId,
       }));
     }
-  }
+  };
 
   const handleGenerateReceipt = (pkg: PackageData) => {
     const carrierName = carrierNames[pkg.carrierId] || "Unknown";
@@ -385,14 +447,14 @@ const Orders = () => {
     jsPDFInvoiceTemplate(props);
   };
 
-
-
   return (
       <>
         <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
           {/* packageOrigin */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">PACKAGE ORIGIN</label>
+            <label className="block text-sm font-medium text-gray-700">
+              PACKAGE ORIGIN
+            </label>
             <Input
                 type="text"
                 name="packageOrigin"
@@ -404,7 +466,9 @@ const Orders = () => {
 
           {/* destination */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">DESTINATION</label>
+            <label className="block text-sm font-medium text-gray-700">
+              DESTINATION
+            </label>
             <Input
                 type="text"
                 name="destination"
@@ -416,7 +480,9 @@ const Orders = () => {
 
           {/* receiverName */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">RECEIVER NAME</label>
+            <label className="block text-sm font-medium text-gray-700">
+              RECEIVER NAME
+            </label>
             <Input
                 type="text"
                 name="receiverName"
@@ -428,7 +494,9 @@ const Orders = () => {
 
           {/* receiverEmail */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">RECEIVER EMAIL</label>
+            <label className="block text-sm font-medium text-gray-700">
+              RECEIVER EMAIL
+            </label>
             <Input
                 type="email"
                 name="receiverEmail"
@@ -440,7 +508,9 @@ const Orders = () => {
 
           {/* receiverPhone */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">RECEIVER PHONE</label>
+            <label className="block text-sm font-medium text-gray-700">
+              RECEIVER PHONE
+            </label>
             <Input
                 type="tel"
                 name="receiverPhone"
@@ -452,7 +522,9 @@ const Orders = () => {
 
           {/* receiverAddress */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">RECEIVER ADDRESS</label>
+            <label className="block text-sm font-medium text-gray-700">
+              RECEIVER ADDRESS
+            </label>
             <Input
                 type="text"
                 name="receiverAddress"
@@ -464,7 +536,9 @@ const Orders = () => {
 
           {/* packageContent */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">PACKAGE CONTENT</label>
+            <label className="block text-sm font-medium text-gray-700">
+              PACKAGE CONTENT
+            </label>
             <Input
                 type="text"
                 name="packageContent"
@@ -476,7 +550,9 @@ const Orders = () => {
 
           {/* senderName */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">SENDER NAME</label>
+            <label className="block text-sm font-medium text-gray-700">
+              SENDER NAME
+            </label>
             <Input
                 type="text"
                 name="senderName"
@@ -488,7 +564,9 @@ const Orders = () => {
 
           {/* senderEmail */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">SENDER EMAIL</label>
+            <label className="block text-sm font-medium text-gray-700">
+              SENDER EMAIL
+            </label>
             <Input
                 type="email"
                 name="senderEmail"
@@ -500,7 +578,9 @@ const Orders = () => {
 
           {/* senderPhone */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">SENDER PHONE</label>
+            <label className="block text-sm font-medium text-gray-700">
+              SENDER PHONE
+            </label>
             <Input
                 type="tel"
                 name="senderPhone"
@@ -512,7 +592,9 @@ const Orders = () => {
 
           {/* senderAddress */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">SENDER ADDRESS</label>
+            <label className="block text-sm font-medium text-gray-700">
+              SENDER ADDRESS
+            </label>
             <Input
                 type="text"
                 name="senderAddress"
@@ -524,7 +606,9 @@ const Orders = () => {
 
           {/* weightKg */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">WEIGHT (KG)</label>
+            <label className="block text-sm font-medium text-gray-700">
+              WEIGHT (KG)
+            </label>
             <Input
                 type="number"
                 name="weightKg"
@@ -538,7 +622,9 @@ const Orders = () => {
 
           {/* quantity */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">QUANTITY</label>
+            <label className="block text-sm font-medium text-gray-700">
+              QUANTITY
+            </label>
             <Input
                 type="number"
                 name="quantity"
@@ -551,7 +637,9 @@ const Orders = () => {
 
           {/* carrierId */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">CARRIER</label>
+            <label className="block text-sm font-medium text-gray-700">
+              CARRIER
+            </label>
             <select
                 name="carrierId"
                 value={formData.carrierId}
@@ -562,7 +650,7 @@ const Orders = () => {
               <option value="" disabled>
                 Select a carrier
               </option>
-              {carriers.map(carrier => (
+              {carriers.map((carrier) => (
                   <option key={carrier.id} value={carrier.id}>
                     {carrier.name}
                   </option>
@@ -572,7 +660,9 @@ const Orders = () => {
 
           {/* deliveryType */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">DELIVERY TYPE</label>
+            <label className="block text-sm font-medium text-gray-700">
+              DELIVERY TYPE
+            </label>
             <select
                 name="deliveryType"
                 value={formData.deliveryType}
@@ -586,7 +676,9 @@ const Orders = () => {
 
           {/* transportMode */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">TRANSPORT MODE</label>
+            <label className="block text-sm font-medium text-gray-700">
+              TRANSPORT MODE
+            </label>
             <select
                 name="transportMode"
                 value={formData.transportMode}
@@ -606,7 +698,9 @@ const Orders = () => {
 
           {/* expectedDeliveryDate */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">EXPECTED DELIVERY DATE</label>
+            <label className="block text-sm font-medium text-gray-700">
+              EXPECTED DELIVERY DATE
+            </label>
             <Input
                 type="date"
                 name="expectedDeliveryDate"
@@ -618,7 +712,9 @@ const Orders = () => {
 
           {/* departureTime */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">DEPARTURE TIME</label>
+            <label className="block text-sm font-medium text-gray-700">
+              DEPARTURE TIME
+            </label>
             <Input
                 type="time"
                 name="departureTime"
@@ -630,7 +726,9 @@ const Orders = () => {
 
           {/* comment */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">COMMENT</label>
+            <label className="block text-sm font-medium text-gray-700">
+              COMMENT
+            </label>
             <textarea
                 name="comment"
                 value={formData.comment}
@@ -641,7 +739,6 @@ const Orders = () => {
             />
           </div>
 
-
           <Button
               type="submit"
               imageSrc="/icons/setup-02.svg"
@@ -651,7 +748,7 @@ const Orders = () => {
               borderRadius="rounded-2xl"
               border="border-none"
               width="250px"
-              text={editMode ? 'Update Package' : 'Generate Tracking Number'}
+              text={editMode ? "Update Package" : "Generate Tracking Number"}
               bgColor="bg-primary-100"
               textColor="text-white-color"
               className="gap-6"
@@ -660,16 +757,43 @@ const Orders = () => {
 
         <h2>Manage Packages</h2>
         <ul className="package-list">
-          {packages.map(pkg => (
+          {packages.map((pkg) => (
               <li key={pkg.id} className="border-primary-200 bg-transparent">
                 {pkg.trackingNumber} - {pkg.receiverName}
                 <div className="gap-8">
-                  <button onClick={() => handleEdit(pkg)} className="w-[170px] p-4 bg-primary-100 hover:bg-blue-500 rounded-2xl text-white-color font-archivo font-medium ">Edit</button>
-                  <button onClick={() => handleDelete(pkg.id)} className="w-[170px] p-4 rounded-2xl bg-error hover:bg-red-300 text-white-color font-archivo font-medium">Delete</button>
-                  <button onClick={() => handleGenerateReceipt(pkg)} className="w-[170px] p-4 rounded-2xl bg-info hover:bg-blue-700 text-white-color font-archivo font-medium">Receipt</button>
+                  <button
+                      onClick={() => handleEdit(pkg)}
+                      className="w-[170px] p-4 bg-primary-100 hover:bg-blue-500 rounded-2xl text-white-color font-archivo font-medium "
+                  >
+                    Edit
+                  </button>
+                  <button
+                      onClick={() => handleDelete(pkg.id)}
+                      className="w-[170px] p-4 rounded-2xl bg-error hover:bg-red-300 text-white-color font-archivo font-medium"
+                  >
+                    Delete
+                  </button>
+                  <button
+                      onClick={() => handleGenerateReceipt(pkg)}
+                      className="w-[170px] p-4 rounded-2xl bg-info hover:bg-blue-700 text-white-color font-archivo font-medium"
+                  >
+                    Receipt
+                  </button>
                 </div>
               </li>
           ))}
+
+          {toast && (
+              <div className="fixed top-4 right-4 z-50">
+                <ToastNotification
+                    {...toast}
+                    onClose={() => {
+                      setToast(null);
+                      toast.onClose && toast.onClose();
+                    }}
+                />
+              </div>
+          )}
         </ul>
       </>
   );
@@ -681,46 +805,88 @@ type Courier = {
 
 const Couriers = () => {
   const [couriers, setCouriers] = useState<Courier[]>([]);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
+  const [toast, setToast] = useState<any>(null);
+
+  const showToast = (type: "success" | "error" | "warning" | "info", title: string, subtitle?: string, actions?: any[], onClose?: () => void) => {
+    setToast({ type, title, subtitle, actions, onClose });
+  };
+
+  const confirmAction = (title: string, subtitle: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      showToast(
+          "warning",
+          title,
+          subtitle,
+          [
+            {
+              label: "Yes",
+              onClick: () => {
+                setToast(null);
+                resolve(true);
+              },
+              variant: "primary",
+            },
+            {
+              label: "No",
+              onClick: () => {
+                setToast(null);
+                resolve(false);
+              },
+              variant: "secondary",
+            },
+          ],
+          () => {
+            setToast(null);
+            resolve(false);
+          }
+      );
+    });
+  };
+
 
   const getCourierImage = (courierName: string) => {
     switch (courierName.toLowerCase()) {
-      case 'dhl':
-        return '/images/dhl.svg';
-      case 'fedex':
-        return '/images/fedex.svg';
+      case "dhl":
+        return "/images/dhl.svg";
+      case "fedex":
+        return "/images/fedex.svg";
       default:
-        return '/images/usps.svg';
+        return "/images/usps.svg";
     }
   };
 
   const fetchCouriers = async () => {
-    const snapshot = await getDocs(collection(db, 'couriers'));
-    const list = snapshot.docs.map(doc => ({
+    const snapshot = await getDocs(collection(db, "couriers"));
+    const list = snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as Omit<Courier, 'id'>),
+      ...(doc.data() as Omit<Courier, "id">),
     }));
     setCouriers(list);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return alert('Courier name is required');
+    if (!name.trim()) {
+      showToast("error", "Missing Name", "Courier name is required");
+      return;
+    }
 
     try {
       if (editId) {
-        await updateDoc(doc(db, 'couriers', editId), { name });
+        await updateDoc(doc(db, "couriers", editId), { name });
         setEditId(null);
       } else {
-        await addDoc(collection(db, 'couriers'), { name });
+        await addDoc(collection(db, "couriers"), { name });
       }
 
-      setName('');
+      setName("");
       fetchCouriers();
+      showToast("success", "Courier Saved", "Courier information saved successfully.");
     } catch (err) {
-      console.error('Error saving courier:', err);
-      alert('Failed to save courier');
+      console.error("Error saving courier:", err);
+      showToast("error", "Save Failed", "Failed to save courier");
     }
   };
 
@@ -730,10 +896,16 @@ const Couriers = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this courier?')) return;
-    await deleteDoc(doc(db, 'couriers', id));
+    const confirmed = await confirmAction(
+        "Delete Courier?",
+        "Are you sure you want to delete this courier?"
+    );
+    if (!confirmed) return;
+    await deleteDoc(doc(db, "couriers", id));
     fetchCouriers();
+    showToast("success", "Courier Deleted", "Courier deleted successfully.");
   };
+
 
   useEffect(() => {
     fetchCouriers();
@@ -748,29 +920,34 @@ const Couriers = () => {
               type="text"
               placeholder="Courier name"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               className="border p-2 w-full"
               required
           />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-            {editId ? 'Update Courier' : 'Add Courier'}
+          <button
+              type="submit"
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            {editId ? "Update Courier" : "Add Courier"}
           </button>
         </form>
 
         <ul className="mt-6 space-y-3">
-          {couriers.map(courier => (
+          {couriers.map((courier) => (
               <li
                   key={courier.id}
                   className="flex items-center justify-between border-b pb-2"
               >
-                <span>
-                  <Image
-                      src={getCourierImage(courier.name)}
-                      alt={courier.name}
-                      width={40}
-                      height={50}
-                      className={"rounded-full"}
-                />&nbsp;{courier.name}</span>
+            <span>
+              <Image
+                  src={getCourierImage(courier.name)}
+                  alt={courier.name}
+                  width={40}
+                  height={50}
+                  className={"rounded-full"}
+              />
+              &nbsp;{courier.name}
+            </span>
                 <div className="flex gap-3">
                   <button
                       onClick={() => handleEdit(courier)}
@@ -787,30 +964,43 @@ const Couriers = () => {
                 </div>
               </li>
           ))}
-        </ul>
-      </div>
-  );
-};
+          {toast && (
+              <div className="fixed top-4 right-4 z-50">
+                <ToastNotification
+                    {...toast}
+                    onClose={() => {
+                      setToast(null);
+                      toast.onClose && toast.onClose();
+                    }}
+                />
+              </div>
+          )}
+              </ul>
+            </div>
+            );
+          };
 
+          export default function AdminDashboard() {
+          const [currentView, setCurrentView] = useState<AdminView>("dashboard");
 
-export default function AdminDashboard() {
-  const [currentView, setCurrentView] = useState<AdminView>('dashboard')
+          const renderContent = () => {
+          switch (currentView) {
+          case "orders":
+          return <Orders />;
+          case "couriers":
+          return <Couriers />;
+          case "dashboard":
+          default:
+          return <DashboardOverview />;
+        }
+        };
 
-  const renderContent = () => {
-    switch (currentView) {
-      case 'orders':
-        return <Orders />;
-      case 'couriers':
-        return <Couriers />;
-      case 'dashboard':
-      default:
-        return <DashboardOverview />;
-    }
-  };
-
-  return (
-      <SidebarProvider>
-        <AppSidebar onChangeViewAction={setCurrentView} renderedComponentAction={renderContent} />
+          return (
+          <SidebarProvider>
+          <AppSidebar
+          onChangeViewAction={setCurrentView}
+            renderedComponentAction={renderContent}
+        />
         <SidebarInset>
           <header className="flex h-16 items-center gap-2 px-4">
             <Separator orientation="vertical" className="h-4" />
@@ -821,7 +1011,9 @@ export default function AdminDashboard() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{currentView.charAt(0).toUpperCase() + currentView.slice(1)}</BreadcrumbPage>
+                  <BreadcrumbPage>
+                    {currentView.charAt(0).toUpperCase() + currentView.slice(1)}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
