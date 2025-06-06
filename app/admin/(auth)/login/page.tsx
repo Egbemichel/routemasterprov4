@@ -25,9 +25,10 @@ export default function LoginPage() {
             });
 
             router.push("/admin/dashboard");
-        } catch (err: any) {
-            setError(err.message);
-            console.error(err);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.error(err.message);
+            }
         }
     };
 

@@ -21,8 +21,14 @@ import {db} from "@/lib/firebaseClient";
 import emailjs from "emailjs-com";
 import {geocodeAddress} from "@/app/utils/geocodeAddress";
 import Image from 'next/image'
-import jsPDFInvoiceTemplate, { OutputType } from "jspdf-invoice-template";
+import jsPDFInvoiceTemplate from "jspdf-invoice-template";
 import {getDoc} from "firebase/firestore";
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
 
 type PackageData = {
   comment: string;
@@ -47,8 +53,8 @@ type PackageData = {
   deliveryType: string;
   transportMode: string;
   status?: string;
-  currentPosition?: any;
-  endCoordinates?: any;
+  currentPosition?: Coordinates;
+  endCoordinates?: Coordinates;
   reason?: string;
 };
 
@@ -141,7 +147,7 @@ const Orders = () => {
         fetchCarrierName(pkg.carrierId);
       }
     });
-  }, [packages]);
+  }, );
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

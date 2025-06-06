@@ -5,6 +5,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import TrackingDialog from "@/usercomponents/TrackingDialog";
 import Button from "@/usercomponents/Button";
+import Image from "next/image";
 
 const steps = [
     {
@@ -58,7 +59,7 @@ const ServicesPage = () => {
 
                         <div className="flex-1 max-w-md w-full">
                             {step.mediaType === "image" ? (
-                                <img
+                                <Image
                                     src={step.mediaSrc}
                                     alt={step.title}
                                     className="rounded-xl shadow-md w-full object-cover"
