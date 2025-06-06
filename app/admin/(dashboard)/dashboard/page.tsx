@@ -92,18 +92,27 @@ const DashboardOverview = () => {
       </div>
   );
 };
+
+type ToastType = "success" | "error" | "warning" | "info";
+type ToastAction = {
+  label: string;
+  onClick: () => void;
+  variant?: "primary" | "secondary";
+};
+type ToastState = {
+  type: ToastType;
+  title: string;
+  subtitle?: string;
+  actions?: ToastAction[];
+  onClose?: () => void;
+} | null;
+
 const Orders = () => {
   const [carrierNames, setCarrierNames] = useState<Record<string, string>>({});
-  const [toast, setToast] = useState<{
-    type: "success" | "error" | "warning" | "info";
-    title: string;
-    subtitle?: string;
-    actions?: any[];
-    onClose?: () => void;
-  } | null>(null);
+  const [toast, setToast] = useState<ToastState>(null);
 
   // Helper for showing toast
-  const showToast = (type: "success" | "error" | "warning" | "info", title: string, subtitle?: string, actions?: any[], onClose?: () => void) => {
+  const showToast = (type: ToastType, title: string, subtitle?: string, actions?: ToastAction1[], onClose?: () => void) => {
     setToast({ type, title, subtitle, actions, onClose });
   };
   const [formData, setFormData] = useState({
@@ -807,9 +816,9 @@ const Couriers = () => {
   const [couriers, setCouriers] = useState<Courier[]>([]);
   const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
-  const [toast, setToast] = useState<any>(null);
+  const [toast, setToast] = useState<ToastState>(null);
 
-  const showToast = (type: "success" | "error" | "warning" | "info", title: string, subtitle?: string, actions?: any[], onClose?: () => void) => {
+  const showToast = (type: ToastType, title: string, subtitle?: string, actions?: ToastAction[], onClose?: () => void) => {
     setToast({ type, title, subtitle, actions, onClose });
   };
 
@@ -975,30 +984,30 @@ const Couriers = () => {
                 />
               </div>
           )}
-              </ul>
-            </div>
-            );
-          };
+        </ul>
+      </div>
+  );
+};
 
-          export default function AdminDashboard() {
-          const [currentView, setCurrentView] = useState<AdminView>("dashboard");
+export default function AdminDashboard() {
+  const [currentView, setCurrentView] = useState<AdminView>("dashboard");
 
-          const renderContent = () => {
-          switch (currentView) {
-          case "orders":
-          return <Orders />;
-          case "couriers":
-          return <Couriers />;
-          case "dashboard":
-          default:
-          return <DashboardOverview />;
-        }
-        };
+  const renderContent = () => {
+    switch (currentView) {
+      case "orders":
+        return <Orders />;
+      case "couriers":
+        return <Couriers />;
+      case "dashboard":
+      default:
+        return <DashboardOverview />;
+    }
+  };
 
-          return (
-          <SidebarProvider>
-          <AppSidebar
-          onChangeViewAction={setCurrentView}
+  return (
+      <SidebarProvider>
+        <AppSidebar
+            onChangeViewAction={setCurrentView}
             renderedComponentAction={renderContent}
         />
         <SidebarInset>
