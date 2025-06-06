@@ -18,7 +18,6 @@ import Button from '@/usercomponents/Button'
 import {AdminView} from "@/app/types/view";
 import {addDoc, collection, deleteDoc, doc, getCountFromServer, getDocs, setDoc, updateDoc} from "@firebase/firestore";
 import {db} from "@/lib/firebaseClient";
-import emailjs from "emailjs-com";
 import {geocodeAddress} from "@/app/utils/geocodeAddress";
 import Image from 'next/image'
 import jsPDFInvoiceTemplate from "jspdf-invoice-template";
@@ -155,29 +154,6 @@ const Orders = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const sendEmail = (receiverEmail: string, trackingNumber: string) => {
-    const templateParams = {
-      to_email: receiverEmail,
-      tracking_number: trackingNumber,
-      receiver_name: formData.receiverName,
-      package_content: formData.packageContent,
-      sender_name: formData.senderName,
-      sender_address: formData.senderAddress,
-      tracking_url: `${window.location.origin}/track/${trackingNumber}`,
-    };
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
-    const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID!;
-
-    emailjs.send(serviceId, templateId, templateParams, userId)
-        .then(response => {
-          console.log('Email sent successfully:', response.status, response.text);
-        })
-        .catch(error => {
-          console.error('Error sending email:', error);
-        });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -236,7 +212,6 @@ const Orders = () => {
           comment: formData.comment,
         });
         alert(`Tracking number generated: ${trackingNumber}`);
-        sendEmail(formData.receiverEmail, trackingNumber);
       } catch (error) {
         console.error('Create error:', error);
         alert('Failed to create package.');
