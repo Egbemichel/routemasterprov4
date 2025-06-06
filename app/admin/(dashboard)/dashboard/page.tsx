@@ -29,7 +29,6 @@ import {
 import { db } from "@/lib/firebaseClient";
 import { geocodeAddress } from "@/app/utils/geocodeAddress";
 import Image from "next/image";
-import jsPDFInvoiceTemplate from "jspdf-invoice-template";
 import { getDoc } from "firebase/firestore";
 
 
@@ -385,7 +384,10 @@ const Orders = () => {
     }
   };
 
-  const handleGenerateReceipt = (pkg: PackageData) => {
+  const handleGenerateReceipt = async (pkg: PackageData) => {
+    if (typeof window === "undefined") return; // Prevent SSR execution
+
+    const jsPDFInvoiceTemplate = (await import("jspdf-invoice-template")).default;
     const carrierName = carrierNames[pkg.carrierId] || "Unknown";
 
     const props = {
@@ -411,13 +413,13 @@ const Orders = () => {
         headerBorder: false,
         tableBodyBorder: false,
         header: [
-          { title: "#", style: { width: 10 } },
-          { title: "Details", style: { width: 30 } },
-          { title: "Qty", style: { width: 40 } },
-          { title: "Weight", style: { width: 50 } },
-          { title: "Mode", style: { width: 60 } },
-          { title: "DeliveryType", style: { width: 70 } },
-          { title: "Status", style: { width: 90 } },
+          {title: "#", style: {width: 10}},
+          {title: "Details", style: {width: 30}},
+          {title: "Qty", style: {width: 40}},
+          {title: "Weight", style: {width: 50}},
+          {title: "Mode", style: {width: 60}},
+          {title: "DeliveryType", style: {width: 70}},
+          {title: "Status", style: {width: 90}},
         ],
         table: [
           [
@@ -435,17 +437,17 @@ const Orders = () => {
             col1: "Carrier",
             col2: carrierName,
             col3: "",
-            style: { fontSize: 12 },
+            style: {fontSize: 12},
           },
           {
             col2: `Origin: ${pkg.packageOrigin}` || "Unknown",
             col3: "",
-            style: { fontSize: 12 },
+            style: {fontSize: 12},
           },
           {
             col2: `Destination: ${pkg.destination}` || "Unknown",
             col3: "",
-            style: { fontSize: 12 },
+            style: {fontSize: 12},
           },
         ],
         invDescLabel: "Comments",
