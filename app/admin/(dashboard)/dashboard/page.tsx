@@ -795,13 +795,7 @@ const Orders = () => {
 
           {toast && (
               <div className="fixed top-4 right-4 z-50">
-                <ToastNotification
-                    {...toast}
-                    onClose={() => {
-                      setToast(null);
-                      toast.onClose && toast.onClose();
-                    }}
-                />
+
               </div>
           )}
         </ul>
@@ -976,13 +970,7 @@ const Couriers = () => {
           ))}
           {toast && (
               <div className="fixed top-4 right-4 z-50">
-                <ToastNotification
-                    {...toast}
-                    onClose={() => {
-                      setToast(null);
-                      toast.onClose && toast.onClose();
-                    }}
-                />
+
               </div>
           )}
         </ul>
