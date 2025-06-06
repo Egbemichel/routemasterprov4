@@ -1,0 +1,70 @@
+@import "odometer/themes/odometer-theme-default.css";
+@import "tailwindcss";
+
+@font-face {
+  font-family: Archivo;
+  src: url("/fonts/Archivo-Variable.ttf") format("truetype");
+}
+@font-face {
+  font-family: Archivo-Italic;
+  src: url("/fonts/Archivo-VariableItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: Pilcrow;
+  src: url("/fonts/PilcrowRounded-Varaible.ttf") format("truetype");
+}
+@theme {
+  /* === Font Families === */
+  --font-archivo: 'Archivo', sans-serif;
+  --font-pilcrow: 'Pilcrow Rounded', sans-serif;
+
+  /* === Font Sizes === */
+  --text-title: 34px;
+  --leading-title: 40px;
+
+  --text-h1: 28px;
+  --leading-h1: 36px;
+
+  --text-h2: 24px;
+  --leading-h2: 32px;
+
+  --text-h3: 20px;
+  --leading-h3: 24px;
+
+  --text-h4: 18px;
+  --leading-h4: 24px;
+
+  --text-button-primary: 16px;
+  --leading-button-primary: 18px;
+
+  --text-button-secondary: 14px;
+  --leading-button-secondary: 16px;
+
+  --text-body: 16px;
+  --leading-body: 20px;
+
+  --text-quote: 16px;
+  --leading-quote: 18px;
+
+  --text-subtitle: 14px;
+  --leading-subtitle: 16px;
+
+  --text-small: 12px;
+  --leading-small: 14px;
+
+  /* === Colors === */
+  --color-primary-100: oklch(0.42 0.287415 264.3072);
+  --color-primary-200: oklch(0.17 0.1144 269.85);
+
+
+  --color-secondary-100: oklch(0.71 0.1925 44.04);
+
+
+  --color-dark-color: oklch(0.15 0 0);
+  --color-white-color: oklch(0.99 0.0026 286.35);
+  --color-gray-color: oklch(0.64 0 0);
+  --color-success: oklch(0.61 0.1507 154.1);
+  --color-error: oklch(0.6 0.1898 28.87);
+  --color-warning: oklch(0.81 0.166182 82.7023);
+  --color-info: oklch(0.63 0.18 259.96);
+}
