@@ -62,6 +62,8 @@ const AboutPage = () => {
                                 <Image
                                     src={step.mediaSrc}
                                     alt={step.title}
+                                    width={575}
+                                    height={348}
                                     className="rounded-xl shadow-md w-full object-cover"
                                 />
                             ) : (

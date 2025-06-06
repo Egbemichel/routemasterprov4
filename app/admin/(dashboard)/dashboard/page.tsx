@@ -336,7 +336,7 @@ const Orders = () => {
     }
   }
 
-  const handleGenerateReceipt = (pkg: any) => {
+  const handleGenerateReceipt = (pkg: PackageData) => {
     const carrierName = carrierNames[pkg.carrierId] || "Unknown";
 
     const props = {
