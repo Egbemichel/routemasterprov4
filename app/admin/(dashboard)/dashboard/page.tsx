@@ -296,17 +296,20 @@ const Orders = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this package?')) {
-      try {
-        await deleteDoc(doc(db, 'packages', id));
-        setPackages(packages.filter(pkg => pkg.id !== id));
-        alert('Package deleted successfully.');
-      } catch (error) {
-        console.error('Delete error:', error);
-        alert('Failed to delete package.');
+    if (typeof window !== 'undefined') {
+      if (window.confirm('Are you sure you want to delete this package?')) {
+        try {
+          await deleteDoc(doc(db, 'packages', id));
+          setPackages(packages.filter(pkg => pkg.id !== id));
+          alert('Package deleted successfully.');
+        } catch (error) {
+          console.error('Delete error:', error);
+          alert('Failed to delete package.');
+        }
       }
     }
   };
+
 
 
   const fetchCarrierName = async (carrierId: string) => {
