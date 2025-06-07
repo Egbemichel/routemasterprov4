@@ -476,12 +476,12 @@ const Orders = () => {
             style: { fontSize: 12 },
           },
           {
-            col2: "Receiver's signature_________________________________________________" || "Unknown",
+            col2: "Receiver's signature:__________________________________________________________________",
             col3: "",
             style: { fontSize: 12, marginTop: 60 },
           },
           {
-            col2: "Agency's signature_________________________________________________" || "Unknown",
+            col2: "Agency's signature:____________________________________________________________________",
             col3: "",
             style: { fontSize: 12, marginTop: 110 },
           },
