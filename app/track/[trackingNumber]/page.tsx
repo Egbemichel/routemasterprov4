@@ -17,12 +17,25 @@ const statusStyles: { [key: string]: string } = {
     'cancelled': 'bg-red-100 text-red-800',
 };
 
+const getCourierImage = (courierName?: string) => {
+    if (!courierName) return '/images/usps.svg';
+
+    switch (courierName.toLowerCase()) {
+        case 'dhl':
+            return '/images/dhl.svg';
+        case 'fedex':
+            return '/images/fedex.svg';
+        default:
+            return '/images/usps.svg';
+    }
+};
+
 const TrackingPage = () => {
     const params = useParams();
     const trackingNumber = params?.trackingNumber as string;
 
     const [packageData, setPackageData] = useState<DocumentData | null>(null);
-    const [carrierName, setCarrierName] = useState<string>('Loading...');
+    const [carrierName, setCarrierName] = useState<string | null>(null);
     const [originCountry, setOriginCountry] = useState<string | null>(null);
     const [destinationCountry, setDestinationCountry] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -30,39 +43,16 @@ const TrackingPage = () => {
     useEffect(() => {
         if (!trackingNumber) return;
 
-        const fetchPackage = async () => {
-            try {
-                const docRef = doc(db, 'packages', trackingNumber);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    setPackageData(data);
-
-                    // Fetch countries and carrier after we have data
-                    const [origin, destination] = await Promise.all([
-                        getCountryFromAddress(data.senderAddress),
-                        getCountryFromAddress(data.receiverAddress),
-                    ]);
-
-                    setOriginCountry(origin);
-                    setDestinationCountry(destination);
-
-                    await fetchCarrierName(data.carrierId);
-                } else {
-                    console.warn('No such package');
-                }
-            } catch (error) {
-                console.error('Error fetching package data:', error);
-            } finally {
-                setLoading(false);
+        const fetchCarrierName = async (carrierId?: string) => {
+            if (!carrierId) {
+                setCarrierName(' ');
+                return;
             }
-        };
 
-        const fetchCarrierName = async (carrierId: string) => {
             try {
                 const carrierRef = doc(db, 'couriers', carrierId);
                 const carrierSnap = await getDoc(carrierRef);
+
                 if (carrierSnap.exists()) {
                     const carrierData = carrierSnap.data();
                     setCarrierName(carrierData.name || carrierId);
@@ -75,23 +65,42 @@ const TrackingPage = () => {
             }
         };
 
+        const fetchPackage = async () => {
+            try {
+                const docRef = doc(db, 'packages', trackingNumber);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    console.warn('No such package');
+                    return;
+                }
+
+                const data = docSnap.data();
+                setPackageData(data);
+
+                const [origin, destination] = await Promise.all([
+                    getCountryFromAddress(data.senderAddress),
+                    getCountryFromAddress(data.receiverAddress),
+                ]);
+
+                setOriginCountry(origin);
+                setDestinationCountry(destination);
+                await fetchCarrierName(data.carrierId);
+            } catch (error) {
+                console.error('Error fetching package data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchPackage();
     }, [trackingNumber]);
 
-    if (loading || !packageData) return <div className="p-10 text-center text-lg">Loading...</div>;
+    if (loading || !packageData) {
+        return <div className="p-10 text-center text-lg">Loading...</div>;
+    }
 
-    const statusClass = statusStyles[packageData.status?.toLowerCase()] || 'bg-gray-100 text-gray-800';
-
-    const getCourierImage = (courierName: string) => {
-        switch (courierName.toLowerCase()) {
-            case 'dhl':
-                return '/images/dhl.svg';
-            case 'fedex':
-                return '/images/fedex.svg';
-            default:
-                return '/images/usps.svg';
-        }
-    };
+    const statusClass = statusStyles[packageData.status?.toLowerCase?.()] || 'bg-gray-100 text-gray-800';
 
     return (
         <div className="flex flex-col items-center justify-between gap-5 p-5">
@@ -120,13 +129,17 @@ const TrackingPage = () => {
             <Separator className="my-4" />
             <p>Origin Country: {originCountry || 'Unknown'}</p>
             <p>Destination Country: {destinationCountry || 'Unknown'}</p>
-            <p>Carrier: <Image
-                src={getCourierImage(carrierName)}
-                alt={carrierName}
-                width={40}
-                height={50}
-                className={"rounded-full"}
-            />&nbsp; {carrierName}</p>
+            <p className="flex items-center gap-2">
+                Carrier:
+                <Image
+                    src={getCourierImage(carrierName || undefined)}
+                    alt={carrierName || 'Carrier'}
+                    width={40}
+                    height={50}
+                    className="rounded-full"
+                />
+                {carrierName || 'Unknown'}
+            </p>
             <p>Type of Shipment: {packageData.deliveryType}</p>
             <p>Weight: {packageData.weightKg} kg</p>
             <p>Shipment Mode: {packageData.transportMode}</p>
