@@ -402,9 +402,6 @@ const Orders = () => {
 
     const logoBase64 = await toBase64("/icons/logoO.png");
     const carrierName = carrierNames[pkg.carrierId] || "Unknown";
-
-    // @ts-ignore
-    // @ts-ignore
     const props = {
       outputType: "save",
       returnJsPDFDocObject: true,
