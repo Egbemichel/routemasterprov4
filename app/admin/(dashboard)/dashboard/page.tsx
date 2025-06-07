@@ -385,27 +385,56 @@ const Orders = () => {
   };
 
   const handleGenerateReceipt = async (pkg: PackageData) => {
-    if (typeof window === "undefined") return; // Prevent SSR execution
+    if (typeof window === "undefined") return;
 
     const jsPDFInvoiceTemplate = (await import("jspdf-invoice-template")).default;
+
+    const toBase64 = async (url: string) => {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    const logoBase64 = await toBase64("/icons/logoO.png");
     const carrierName = carrierNames[pkg.carrierId] || "Unknown";
 
+    // @ts-ignore
+    // @ts-ignore
     const props = {
       outputType: "save",
+      returnJsPDFDocObject: true,
       fileName: `Receipt_${pkg.trackingNumber}`,
       orientationLandscape: true,
+      compress: true,
+
+      logo: {
+        src: logoBase64,
+        type: "PNG",
+        width: 40,
+        height: 20,
+        margin: { top: 0, left: 0 },
+      },
+
       business: {
         name: "RouteMasterPro",
         email: "outlook.routemasterpro@gmail.com",
         website: "www.routemasterpro.com",
       },
+
       contact: {
-        label: "Shipper Information",
-        name: pkg.senderName,
-        address: pkg.senderAddress,
-        phone: pkg.senderPhone,
-        email: pkg.senderEmail,
+        label: "Receiver's Information",
+        name: pkg.receiverName,
+        address: pkg.receiverAddress,
+        phone: pkg.receiverPhone,
+        email: pkg.receiverEmail,
+        otherInfo: "",
       },
+
       invoice: {
         label: pkg.trackingNumber,
         invDate: `Expected Delivery: ${pkg.expectedDeliveryDate}`,
@@ -413,13 +442,13 @@ const Orders = () => {
         headerBorder: false,
         tableBodyBorder: false,
         header: [
-          {title: "#", style: {width: 10}},
-          {title: "Details", style: {width: 30}},
-          {title: "Qty", style: {width: 40}},
-          {title: "Weight", style: {width: 50}},
-          {title: "Mode", style: {width: 60}},
-          {title: "DeliveryType", style: {width: 70}},
-          {title: "Status", style: {width: 90}},
+          { title: "#", style: { width: 10 } },
+          { title: "Details", style: { width: 30 } },
+          { title: "Qty", style: { width: 40 } },
+          { title: "Weight", style: { width: 50 } },
+          { title: "Mode", style: { width: 60 } },
+          { title: "DeliveryType", style: { width: 70 } },
+          { title: "Status", style: { width: 90 } },
         ],
         table: [
           [
@@ -434,29 +463,40 @@ const Orders = () => {
         ],
         additionalRows: [
           {
-            col1: "Carrier",
+            col1: "Carrier:",
             col2: carrierName,
             col3: "",
-            style: {fontSize: 12},
+            style: { fontSize: 12 },
           },
           {
             col2: `Origin: ${pkg.packageOrigin}` || "Unknown",
             col3: "",
-            style: {fontSize: 12},
+            style: { fontSize: 12 },
           },
           {
-            col2: `Destination: ${pkg.destination}` || "Unknown",
+            col2: `Origin: ${pkg.destination}` || "Unknown",
             col3: "",
-            style: {fontSize: 12},
+            style: { fontSize: 12 },
+          },
+          {
+            col2: "Receiver's signature_________________________________________________" || "Unknown",
+            col3: "",
+            style: { fontSize: 12, marginTop: 60 },
+          },
+          {
+            col2: "Agency's signature_________________________________________________" || "Unknown",
+            col3: "",
+            style: { fontSize: 12, marginTop: 110 },
           },
         ],
-        invDescLabel: "Comments",
-        invDesc: pkg.comment || "No comments provided.",
+        invDescLabel: "Comment",
+        invDesc: pkg.comment || "No comment provided.",
       },
     };
 
     jsPDFInvoiceTemplate(props);
   };
+
 
   return (
       <>
@@ -680,8 +720,8 @@ const Orders = () => {
                 onChange={handleChange}
                 className="w-full border rounded px-3 py-2"
             >
-              <option value="National Shipping">National</option>
-              <option value="International Shipping">International</option>
+              <option value="National Shipping">National Shipping</option>
+              <option value="International Shipping">International Shipping</option>
             </select>
           </div>
 
