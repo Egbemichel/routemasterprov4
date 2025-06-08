@@ -123,6 +123,7 @@ const Orders = () => {
     packageContent: "",
     senderName: "",
     senderEmail: "",
+    status:"",
     senderPhone: "",
     senderAddress: "",
     weightKg: "", // string here, parsed later
@@ -262,6 +263,7 @@ const Orders = () => {
       receiverEmail: "",
       receiverPhone: "",
       receiverAddress: "",
+      status:"",
       packageContent: "",
       senderName: "",
       senderEmail: "",
@@ -325,13 +327,14 @@ const Orders = () => {
       receiverAddress: pkg.receiverAddress || "",
       packageContent: pkg.packageContent || "",
       senderName: pkg.senderName || "",
+      status:pkg.status || "in transit",
       senderEmail: pkg.senderEmail || "",
       senderPhone: pkg.senderPhone || "",
       senderAddress: pkg.senderAddress || "",
       weightKg: pkg.weightKg?.toString() || "",
       quantity: pkg.quantity?.toString() || "",
       carrierId: pkg.carrierId || "",
-      deliveryType: pkg.deliveryType || "national",
+      deliveryType: pkg.deliveryType || "National Shipping",
       transportMode: pkg.transportMode || "",
       expectedDeliveryDate: pkg.expectedDeliveryDate || "",
       departureTime: pkg.departureTime || "",
@@ -703,6 +706,22 @@ const Orders = () => {
                     {carrier.name}
                   </option>
               ))}
+            </select>
+          </div>
+
+          {/* status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              STATUS
+            </label>
+            <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+            >
+              <option value="in transit">In Transit</option>
+              <option value="on hold">On Hold</option>
             </select>
           </div>
 
