@@ -20,6 +20,8 @@ const HeroSection = () => {
     const root = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // follow wall-clock time even when frames are slow, so the intro always finishes on schedule
+        gsap.ticker.lagSmoothing(0);
         const ctx = gsap.context(() => {
             if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -116,7 +118,7 @@ const HeroSection = () => {
                 <button
                     type="button"
                     data-cta
-                    className="flex items-center gap-2 rounded-full border border-[#12123f]/25 bg-white/70 px-8 py-4 text-[16px] font-medium text-[#12123f] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#12123f] hover:bg-[#12123f] hover:text-white active:scale-95"
+                    className="flex items-center gap-2 rounded-full border border-[#12123f]/25 bg-white px-8 py-4 text-[16px] font-medium text-[#12123f] transition-all duration-300 hover:-translate-y-1 hover:border-[#12123f] hover:bg-[#12123f] hover:text-white active:scale-95"
                 >
                     <Calculator size={20} />
                     Get a Quote

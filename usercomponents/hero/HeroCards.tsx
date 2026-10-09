@@ -2,8 +2,12 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 import { gsap } from "gsap";
-import { Car, Phone, Truck, Bus, User } from "lucide-react";
+import { Car, Phone, Truck, Bus } from "lucide-react";
+
+const TruckRoadScene = dynamic(() => import("@/usercomponents/hero/TruckRoadScene"), { ssr: false });
 
 const card = "rounded-[22px] bg-white shadow-[0_24px_50px_-24px_rgba(18,18,63,0.35)]";
 
@@ -31,33 +35,11 @@ function useCountUp(to: number, decimals = 0, delay = 1.6) {
     return ref;
 }
 
-function VanIllustration() {
-    return (
-        <svg viewBox="0 0 220 90" className="h-full w-full" aria-hidden="true">
-            <ellipse cx="110" cy="82" rx="92" ry="5" fill="#12123f" opacity=".12" />
-            <rect x="12" y="14" width="124" height="56" rx="6" fill="#f6f6fb" stroke="#d9dbec" />
-            <rect x="20" y="22" width="108" height="40" rx="3" fill="#ff6a14" />
-            {[0, 1, 2].map((i) => (
-                <rect key={i} x={26 + i * 34} y="28" width="28" height="12" rx="2" fill="#ffb27a" />
-            ))}
-            {[0, 1, 2].map((i) => (
-                <rect key={i} x={26 + i * 34} y="44" width="28" height="12" rx="2" fill="#ffb27a" />
-            ))}
-            <path d="M136 26h36l22 20v24h-58V26Z" fill="#f6f6fb" stroke="#d9dbec" />
-            <path d="M142 32h26l14 14h-40V32Z" fill="#cfd4ef" />
-            <circle cx="52" cy="72" r="10" fill="#12123f" />
-            <circle cx="52" cy="72" r="4" fill="#ff6a14" />
-            <circle cx="166" cy="72" r="10" fill="#12123f" />
-            <circle cx="166" cy="72" r="4" fill="#ff6a14" />
-        </svg>
-    );
-}
-
 export function TruckCard({ className = "" }: { className?: string }) {
     const tabs = [
-        { id: "Truck", Icon: Truck },
-        { id: "Van", Icon: Bus },
-        { id: "Car", Icon: Car },
+        { id: "Truck", Icon: Truck, img: "/images/truck.jpg" },
+        { id: "Van", Icon: Bus, img: "/images/van.jpg" },
+        { id: "Car", Icon: Car, img: "/images/van.jpg" },
     ];
     const [active, setActive] = useState("Truck");
     return (
@@ -77,8 +59,19 @@ export function TruckCard({ className = "" }: { className?: string }) {
                     </button>
                 ))}
             </div>
-            <div className="mt-3 h-[92px]">
-                <VanIllustration />
+            <div className="relative mt-2 h-[116px] overflow-hidden rounded-xl">
+                {tabs.map(({ id, img }) => (
+                    <Image
+                        key={id}
+                        src={img}
+                        alt={`${id} delivery vehicle`}
+                        fill
+                        sizes="240px"
+                        className={`object-contain mix-blend-multiply transition-all duration-500 ${
+                            active === id ? "scale-100 opacity-100" : "pointer-events-none scale-90 opacity-0"
+                        }`}
+                    />
+                ))}
             </div>
             <div className="mt-2 flex items-center justify-between text-[12px] text-[#12123f]">
                 <span className="font-medium">LOG7614390</span>
@@ -138,35 +131,11 @@ export function DeliveryCard({ className = "" }: { className?: string }) {
     );
 }
 
-function TopDownTruck() {
-    return (
-        <svg viewBox="0 0 140 190" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect width="140" height="190" fill="#cfd1d8" />
-            <rect x="12" y="0" width="3" height="190" fill="#fff" opacity=".75" />
-            <rect x="125" y="0" width="3" height="190" fill="#fff" opacity=".75" />
-            {[10, 60, 110, 160].map((y) => (
-                <rect key={y} x="69" y={y} width="3" height="26" fill="#fff" opacity=".7" />
-            ))}
-            <rect x="42" y="14" width="64" height="104" rx="4" fill="#12123f" opacity=".18" transform="translate(8 6)" />
-            <rect x="38" y="8" width="62" height="110" rx="4" fill="#ff6a14" />
-            <rect x="38" y="8" width="62" height="110" rx="4" fill="url(#g)" />
-            <rect x="42" y="124" width="54" height="52" rx="8" fill="#f4f5f8" />
-            <rect x="47" y="132" width="44" height="14" rx="3" fill="#2a2f4a" />
-            <defs>
-                <linearGradient id="g" x1="0" x2="1">
-                    <stop offset="0" stopColor="#fff" stopOpacity=".18" />
-                    <stop offset="1" stopColor="#000" stopOpacity=".12" />
-                </linearGradient>
-            </defs>
-        </svg>
-    );
-}
-
 export function ToolsCard({ className = "" }: { className?: string }) {
     return (
-        <div className={`${card} flex w-full max-w-[444px] gap-4 p-3.5 ${className}`}>
-            <div className="h-[170px] w-[130px] shrink-0 overflow-hidden rounded-[18px] sm:h-[190px] sm:w-[140px]">
-                <TopDownTruck />
+        <div className={`${card} flex w-full max-w-[480px] gap-4 p-3.5 ${className}`}>
+            <div className="relative h-[190px] w-[200px] shrink-0 overflow-hidden rounded-[18px] bg-[#e3e6f4] sm:w-[230px]">
+                <TruckRoadScene />
             </div>
             <div className="flex flex-1 flex-col justify-between py-1 pr-1">
                 <div>
@@ -196,15 +165,16 @@ export function UsersBadge({ className = "" }: { className?: string }) {
     return (
         <div className={className}>
             <div className="flex -space-x-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#eceef9] bg-gradient-to-br from-[#ffd6b8] to-[#e8a070] text-[#12123f]">
-                    <User size={18} />
-                </span>
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#eceef9] bg-gradient-to-br from-[#c9ceee] to-[#8e96cf] text-white">
-                    <User size={18} />
-                </span>
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[#eceef9] bg-[#ff5a0a] text-white">
-                    <User size={18} />
-                </span>
+                {["/images/avatars/user1.png", "/images/avatars/user2.png", "/images/avatars/user3.png"].map((src) => (
+                    <Image
+                        key={src}
+                        src={src}
+                        alt=""
+                        width={44}
+                        height={44}
+                        className="h-11 w-11 rounded-full border-2 border-[#eceef9] bg-white object-cover"
+                    />
+                ))}
             </div>
             <p className="mt-2 text-[28px] font-medium leading-none tracking-tight text-[#12123f]">
                 +<span ref={count}>0</span>k
