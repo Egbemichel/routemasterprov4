@@ -151,6 +151,7 @@ export default function ContainerScene() {
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.05;
         renderer.domElement.style.cssText = "display:block;width:100%;height:100%";
+        renderer.domElement.addEventListener("webglcontextlost", (e) => e.preventDefault()); // allow automatic restore
         mount.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
@@ -296,6 +297,7 @@ export default function ContainerScene() {
             envTex.dispose();
             pmrem.dispose();
             renderer.dispose();
+            renderer.forceContextLoss();
             renderer.domElement.remove();
         };
     }, []);

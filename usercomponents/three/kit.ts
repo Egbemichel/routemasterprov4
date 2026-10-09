@@ -40,6 +40,8 @@ export function createStage(mount: HTMLElement, opts: StageOpts = {}): Stage | n
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     }
     renderer.domElement.style.cssText = "display:block;width:100%;height:100%";
+    // let three restore the context if the browser ever drops it
+    renderer.domElement.addEventListener("webglcontextlost", (e) => e.preventDefault());
     mount.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -103,6 +105,7 @@ export function createStage(mount: HTMLElement, opts: StageOpts = {}): Stage | n
             envTex.dispose();
             pmrem.dispose();
             renderer.dispose();
+            renderer.forceContextLoss(); // free the GPU context now; browsers cap active contexts (~16)
             renderer.domElement.remove();
         },
     };

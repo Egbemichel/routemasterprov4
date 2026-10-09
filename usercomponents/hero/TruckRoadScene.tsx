@@ -117,6 +117,7 @@ export default function TruckRoadScene() {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.domElement.style.cssText = "display:block;width:100%;height:100%";
+        renderer.domElement.addEventListener("webglcontextlost", (e) => e.preventDefault());
         mount.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
@@ -287,6 +288,7 @@ export default function TruckRoadScene() {
             envTex.dispose();
             pmrem.dispose();
             renderer.dispose();
+            renderer.forceContextLoss();
             renderer.domElement.remove();
         };
     }, []);
