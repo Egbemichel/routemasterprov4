@@ -546,3 +546,50 @@ export function rng(seed = 1) {
     let s = seed;
     return () => ((s = (s * 16807) % 2147483647) / 2147483647);
 }
+
+/** A chunky 3D "?" built from a tube + dot. ~1.6 wide, 2.8 tall, centred. */
+export function buildQuestionMark(color: THREE.ColorRepresentation = PALETTE.orange) {
+    const g = new THREE.Group();
+    const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-0.62, 0.8, 0),
+        new THREE.Vector3(-0.5, 1.28, 0),
+        new THREE.Vector3(0, 1.55, 0),
+        new THREE.Vector3(0.5, 1.28, 0),
+        new THREE.Vector3(0.56, 0.8, 0),
+        new THREE.Vector3(0.3, 0.32, 0),
+        new THREE.Vector3(0, 0.02, 0),
+        new THREE.Vector3(0, -0.3, 0),
+    ]);
+    const m = std(color, 0.35, 0.3);
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, 0.2, 16, false), m));
+    const dot = new THREE.Mesh(new THREE.SphereGeometry(0.26, 20, 20), m);
+    dot.position.y = -0.85;
+    g.add(dot);
+    g.position.y = -0.35;
+    const w = new THREE.Group();
+    w.add(g);
+    return w;
+}
+
+/** Chunky opening quote marks. */
+export function buildQuote(color: THREE.ColorRepresentation = PALETTE.orange) {
+    const w = new THREE.Group();
+    const m = std(color, 0.35, 0.3);
+    for (const x of [-0.5, 0.5]) {
+        const s = new THREE.Shape();
+        s.absarc(0, 0.2, 0.4, 0, Math.PI * 2, false);
+        const tail = new THREE.Shape();
+        tail.moveTo(-0.4, 0.2);
+        tail.quadraticCurveTo(-0.45, -0.55, 0.2, -0.85);
+        tail.quadraticCurveTo(-0.1, -0.35, 0.1, 0.1);
+        tail.lineTo(-0.4, 0.2);
+        const opts = { depth: 0.3, bevelEnabled: true, bevelSize: 0.04, bevelThickness: 0.04, bevelSegments: 3 };
+        const a = new THREE.Mesh(new THREE.ExtrudeGeometry(s, opts), m);
+        const b = new THREE.Mesh(new THREE.ExtrudeGeometry(tail, opts), m);
+        const grp = new THREE.Group();
+        grp.add(a, b);
+        grp.position.set(x, 0, -0.15);
+        w.add(grp);
+    }
+    return w;
+}

@@ -10,12 +10,14 @@ import {
     buildGlobe,
     buildParcel,
     buildPallet,
+    buildQuestionMark,
+    buildQuote,
     buildStar,
     buildTruck,
     createStage,
 } from "@/usercomponents/three/kit";
 
-export type ModelKind = "container" | "parcels" | "truck" | "globe" | "forklift" | "star" | "pallet";
+export type ModelKind = "container" | "parcels" | "truck" | "globe" | "forklift" | "star" | "pallet" | "question" | "quote";
 
 /** Mounts children only while near the viewport, so offscreen WebGL contexts are released. */
 export function LazyMount({ children, className = "", rootMargin = "300px" }: { children: React.ReactNode; className?: string; rootMargin?: string }) {
@@ -35,7 +37,7 @@ export function LazyMount({ children, className = "", rootMargin = "300px" }: { 
     );
 }
 
-function build(kind: ModelKind): { obj: THREE.Object3D; radius: number; rotateSpeed: number } {
+export function buildModel(kind: ModelKind): { obj: THREE.Object3D; radius: number; rotateSpeed: number } {
     switch (kind) {
         case "container": {
             const g = new THREE.Group();
@@ -96,6 +98,10 @@ function build(kind: ModelKind): { obj: THREE.Object3D; radius: number; rotateSp
             w.add(g);
             return { obj: w, radius: 2.2, rotateSpeed: 16 };
         }
+        case "question":
+            return { obj: buildQuestionMark(), radius: 2.0, rotateSpeed: 10 };
+        case "quote":
+            return { obj: buildQuote(), radius: 1.6, rotateSpeed: 10 };
         case "star": {
             const s = buildStar(1.2, 0.35);
             return { obj: s, radius: 1.6, rotateSpeed: 10 };
@@ -117,7 +123,7 @@ export default function Model3D({ kind, className = "", tilt = 0.35, spin = true
         if (!stage) return;
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         addLights(stage.scene);
-        const { obj, radius, rotateSpeed } = build(kind);
+        const { obj, radius, rotateSpeed } = buildModel(kind);
         const holder = new THREE.Group();
         holder.add(obj);
         holder.rotation.x = tilt;
