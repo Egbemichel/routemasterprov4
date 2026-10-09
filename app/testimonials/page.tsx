@@ -135,7 +135,7 @@ export default function TestimonialsPage() {
 
             <section className="relative overflow-hidden py-14 md:py-20">
                 <LazyMount className="absolute inset-0" rootMargin="400px">
-                    <FloatingScene items={BACKDROP} className="opacity-90" />
+                    <FloatingScene items={BACKDROP} className="opacity-40 md:opacity-90" />
                 </LazyMount>
 
                 <div className="relative mx-auto max-w-[1200px] px-5 md:px-10">

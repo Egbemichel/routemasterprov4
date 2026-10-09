@@ -84,7 +84,7 @@ export default function FaqPage() {
 
             <section className="relative overflow-hidden py-12 md:py-16">
                 <LazyMount className="absolute inset-0" rootMargin="400px">
-                    <FloatingScene items={BACKDROP} />
+                    <FloatingScene items={BACKDROP} className="opacity-40 md:opacity-100" />
                 </LazyMount>
 
                 <div className="relative mx-auto max-w-[860px] px-5 md:px-10">

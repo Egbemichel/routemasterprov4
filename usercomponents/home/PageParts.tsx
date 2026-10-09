@@ -118,7 +118,7 @@ export function FloatingActions() {
                 trigger={
                     <button
                         type="button"
-                        className="flex items-center gap-2 rounded-full bg-gradient-to-b from-[#ff8a3d] to-[#ff4d00] px-6 py-3 text-[15px] font-medium text-white transition-transform hover:scale-[1.04] active:scale-95"
+                        className="flex items-center gap-2 rounded-full bg-gradient-to-b from-[#ff8a3d] to-[#ff4d00] whitespace-nowrap px-4 py-3 text-[14px] font-medium text-white transition-transform hover:scale-[1.04] sm:px-6 sm:text-[15px] active:scale-95"
                     >
                         <Route size={18} />
                         Track Now
@@ -127,7 +127,7 @@ export function FloatingActions() {
             />
             <button
                 type="button"
-                className="flex items-center gap-2 rounded-full bg-[#12123f] px-6 py-3 text-[15px] font-medium text-white transition-all hover:bg-[#ff5a0a] active:scale-95"
+                className="flex items-center gap-2 rounded-full whitespace-nowrap bg-[#12123f] px-4 py-3 text-[14px] font-medium text-white transition-all hover:bg-[#ff5a0a] sm:px-6 sm:text-[15px] active:scale-95"
             >
                 <Calculator size={18} />
                 Get a Quote

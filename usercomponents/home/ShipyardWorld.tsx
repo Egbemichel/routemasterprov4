@@ -441,7 +441,7 @@ export default function ShipyardWorld() {
 
         /* ------------------------------ camera + loop ------------------------------ */
         stage.onResize((w, h) => {
-            const vh = w < 700 ? 32 : 26;
+            const vh = w < 700 ? 17 : 26;
             const a = w / h;
             cam.left = (-vh * a) / 2;
             cam.right = (vh * a) / 2;

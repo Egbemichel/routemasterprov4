@@ -65,7 +65,7 @@ const HeroSection = () => {
             <div className="pointer-events-none absolute -left-[10%] top-[8%] h-[70%] w-[60%] rounded-full bg-[#ff5a0a]/10 blur-[120px]" />
 
             {/* 3D swinging container stack */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-x-0 top-[100px] z-0 h-[600px] lg:inset-0 lg:h-auto">
                 <ContainerScene />
             </div>
 
@@ -85,6 +85,9 @@ const HeroSection = () => {
                 </h1>
             </div>
 
+            {/* mobile: leave room so the swinging containers show between headline and copy */}
+            <div className="h-[260px] lg:hidden" aria-hidden="true" />
+
             {/* Side copy */}
             <div
                 data-sub
@@ -100,14 +103,14 @@ const HeroSection = () => {
             </div>
 
             {/* CTAs */}
-            <div className="relative z-20 mt-6 flex flex-wrap items-center gap-3 px-5 md:px-10 lg:absolute lg:left-[50%] lg:top-[61%] lg:mt-0 lg:px-0">
-                <div data-cta className="relative">
+            <div className="relative z-20 mt-6 flex items-center gap-3 px-5 md:px-10 lg:absolute lg:left-[50%] lg:top-[61%] lg:mt-0 lg:px-0">
+                <div data-cta className="relative max-sm:flex-1">
                     <span data-pulse className="pointer-events-none absolute inset-0 rounded-full bg-[#ff5a0a]/50" />
                     <TrackingDialog
                         trigger={
                             <button
                                 type="button"
-                                className="relative flex items-center gap-2 rounded-full bg-gradient-to-b from-[#ff8a3d] to-[#ff4d00] px-8 py-4 text-[16px] font-medium text-white shadow-[0_14px_30px_-10px_rgba(255,90,10,0.8)] ring-4 ring-[#ff5a0a]/20 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] active:scale-95"
+                                className="relative flex items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[#ff8a3d] to-[#ff4d00] px-5 py-4 max-sm:w-full sm:px-8 text-[16px] font-medium text-white shadow-[0_14px_30px_-10px_rgba(255,90,10,0.8)] ring-4 ring-[#ff5a0a]/20 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] active:scale-95"
                             >
                                 <Route size={20} />
                                 Track Now
@@ -116,10 +119,10 @@ const HeroSection = () => {
                     />
                 </div>
                 {/* gsap animates this wrapper; the button keeps its own CSS transitions so the two never fight */}
-                <div data-cta>
+                <div data-cta className="max-sm:flex-1">
                     <button
                         type="button"
-                        className="flex items-center gap-2 rounded-full border border-[#12123f]/25 bg-white px-8 py-4 text-[16px] font-medium text-[#12123f] transition-[background-color,color,border-color,transform] duration-300 hover:-translate-y-1 hover:border-[#12123f] hover:bg-[#12123f] hover:text-white active:scale-95"
+                        className="flex items-center justify-center gap-2 rounded-full border border-[#12123f]/25 bg-white px-5 py-4 max-sm:w-full sm:px-8 text-[16px] font-medium text-[#12123f] transition-[background-color,color,border-color,transform] duration-300 hover:-translate-y-1 hover:border-[#12123f] hover:bg-[#12123f] hover:text-white active:scale-95"
                     >
                         <Calculator size={20} />
                         Get a Quote

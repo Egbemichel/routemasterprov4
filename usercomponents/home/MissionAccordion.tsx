@@ -62,8 +62,8 @@ export default function MissionAccordion({ withHeading = false }: { withHeading?
                             onClick={() => setActive(i)}
                             onMouseEnter={() => window.matchMedia("(hover: hover)").matches && setActive(i)}
                             onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setActive(i)}
-                            style={{ flex: open ? "6 1 0%" : "0.55 1 0%" }}
-                            className={`group relative cursor-pointer overflow-hidden rounded-[32px] outline-none transition-[flex,height] duration-[800ms] ease-[cubic-bezier(.7,0,.2,1)] focus-visible:ring-4 focus-visible:ring-[#ff5a0a]/40 ${p.bg} ${
+                            style={{ "--f": open ? "6 1 0%" : "0.55 1 0%" } as React.CSSProperties}
+                            className={`group relative cursor-pointer lg:[flex:var(--f)] overflow-hidden rounded-[32px] outline-none transition-[flex,height] duration-[800ms] ease-[cubic-bezier(.7,0,.2,1)] focus-visible:ring-4 focus-visible:ring-[#ff5a0a]/40 ${p.bg} ${
                                 open ? "max-lg:h-[520px]" : "max-lg:h-[92px]"
                             }`}
                         >
@@ -122,7 +122,7 @@ export default function MissionAccordion({ withHeading = false }: { withHeading?
                             {/* 3D object for the intro card */}
                             {p.id === "intro" && (
                                 <div
-                                    className={`pointer-events-none absolute bottom-0 right-0 h-[60%] w-[70%] transition-all duration-700 lg:h-[88%] lg:w-[52%] ${
+                                    className={`pointer-events-none absolute bottom-0 right-0 h-[60%] w-[88%] transition-all duration-700 lg:h-[88%] lg:w-[52%] ${
                                         open ? "translate-x-0 opacity-100 delay-500" : "translate-x-10 opacity-0"
                                     }`}
                                 >

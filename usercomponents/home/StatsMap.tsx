@@ -100,8 +100,8 @@ export default function StatsMap() {
     const cur = CITIES[idx];
 
     return (
-        <section ref={root} className="mx-auto w-full max-w-[1200px] px-5 py-16 md:px-10 md:py-24" aria-label="Where we deliver">
-            <div data-map className="pointer-events-none relative w-full select-none" style={{ aspectRatio: `${COLS}/${ROWS}` }}>
+        <section ref={root} className="mx-auto w-full max-w-[1200px] overflow-hidden px-5 py-16 md:px-10 md:py-24" aria-label="Where we deliver">
+            <div data-map className="pointer-events-none relative w-full select-none max-md:-ml-[10%] max-md:w-[120%]" style={{ aspectRatio: `${COLS}/${ROWS}` }}>
                 <svg viewBox={`0 0 ${COLS * CELL} ${ROWS * CELL}`} className="absolute inset-0 h-full w-full fill-[#cdd0dc]" aria-hidden="true">
                     {dots}
                 </svg>
@@ -110,12 +110,12 @@ export default function StatsMap() {
                     return (
                         <span key={c.city} data-pin className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${p.x}%`, top: `${p.y}%` }}>
                             <span data-ping className="absolute inset-0 rounded-full bg-[#ff5a0a]/50" />
-                            <span className={`relative block rounded-full bg-[#ff5a0a] ring-4 ring-white/70 ${i === idx ? "h-3.5 w-3.5" : "h-2.5 w-2.5"} transition-all duration-500`} />
+                            <span className={`relative block rounded-full bg-[#ff5a0a] ring-4 ring-white/70 ${i === idx ? "h-2.5 w-2.5 md:h-3.5 md:w-3.5" : "h-1.5 w-1.5 md:h-2.5 md:w-2.5"} transition-all duration-500`} />
                         </span>
                     );
                 })}
                 <div ref={tip} className="absolute z-10" style={{ left: `${project(cur.lon, cur.lat).x}%`, top: `${project(cur.lon, cur.lat).y}%` }}>
-                    <div className="absolute bottom-5 left-1/2 w-max -translate-x-1/2 rounded-2xl bg-white px-4 py-2.5 shadow-[0_20px_40px_-18px_rgba(18,18,63,0.5)]">
+                    <div className="absolute bottom-5 left-1/2 w-max -translate-x-1/2 rounded-xl bg-white px-2.5 py-1.5 shadow max-md:scale-[0.85] md:rounded-2xl md:px-4 md:py-2.5-[0_20px_40px_-18px_rgba(18,18,63,0.5)]">
                         <p className="text-[13px] font-bold uppercase tracking-wide text-[#ff5a0a]">{cur.name}</p>
                         <p className="text-[13px] text-[#12123f]">{cur.city}</p>
                         <span className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-white" />

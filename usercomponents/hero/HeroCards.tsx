@@ -43,7 +43,7 @@ export function TruckCard({ className = "" }: { className?: string }) {
     ];
     const [active, setActive] = useState("Truck");
     return (
-        <div className={`${card} w-[270px] p-4 ${className}`}>
+        <div className={`${card} w-full max-w-[340px] p-4 lg:w-[270px] ${className}`}>
             <div className="flex items-center gap-4 border-b border-[#12123f]/10 text-[12px] text-[#12123f]/55">
                 {tabs.map(({ id, Icon }) => (
                     <button
@@ -90,7 +90,7 @@ export function DeliveryCard({ className = "" }: { className?: string }) {
         { value: "24,6 km", label: "Distance" },
     ];
     return (
-        <div className={`${card} w-[300px] p-4 ${className}`}>
+        <div className={`${card} w-full max-w-[340px] p-4 lg:w-[300px] ${className}`}>
             <p className="text-[15px] font-medium text-[#12123f]">Active Delivery</p>
             <p className="text-[12px] text-[#12123f]/50">Arriving soon</p>
             <div className="mt-3 grid grid-cols-3 gap-2">
@@ -137,8 +137,8 @@ export function DeliveryCard({ className = "" }: { className?: string }) {
 
 export function ToolsCard({ className = "" }: { className?: string }) {
     return (
-        <div className={`${card} flex w-full max-w-[480px] gap-4 p-3.5 ${className}`}>
-            <div className="relative h-[190px] w-[200px] shrink-0 overflow-hidden rounded-[18px] bg-[#e3e6f4] sm:w-[230px]">
+        <div className={`${card} flex w-full max-w-[480px] flex-col gap-4 p-3.5 sm:flex-row ${className}`}>
+            <div className="relative h-[170px] w-full shrink-0 overflow-hidden rounded-[18px] bg-[#e3e6f4] sm:h-[190px] sm:w-[230px]">
                 <TruckRoadScene />
             </div>
             <div className="flex flex-1 flex-col justify-between py-1 pr-1">

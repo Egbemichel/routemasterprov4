@@ -131,7 +131,7 @@ export default function Model3D({ kind, className = "", tilt = 0.35, spin = true
 
         stage.onResize((w, h) => {
             const cam = stage.camera as THREE.PerspectiveCamera;
-            const fit = Math.max(radius, radius / Math.min(1, w / h));
+            const fit = (radius / Math.min(1, w / h)) * 1.08;
             const dist = (fit / Math.tan((cam.fov * Math.PI) / 360)) * 0.95;
             cam.position.set(0, 0.6, dist);
             cam.lookAt(0, 0, 0);

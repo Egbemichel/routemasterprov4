@@ -18,15 +18,15 @@ const TILES: Tile[] = [
     { id: "container", cls: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", kind: "model", model: "container", bg: "bg-gradient-to-br from-[#ff7a1a] to-[#ff4d00]", tilt: 0.22 },
     { id: "golden", cls: "col-span-2 lg:col-span-2", kind: "logo", partner: "golden" },
     { id: "truck", cls: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", kind: "model", model: "truck", bg: "bg-gradient-to-b from-[#e8eaf3] to-[#cfd3e6]", tilt: 0.12 },
-    { id: "gls", cls: "col-span-2 lg:col-span-1", kind: "logo", partner: "gls" },
-    { id: "carga", cls: "col-span-2 lg:col-span-1", kind: "logo", partner: "carga" },
-    { id: "ilg", cls: "col-span-2 lg:col-span-2", kind: "logo", partner: "ilg" },
+    { id: "gls", cls: "col-span-1 lg:col-span-1", kind: "logo", partner: "gls" },
+    { id: "carga", cls: "col-span-1 lg:col-span-1", kind: "logo", partner: "carga" },
+    { id: "ilg", cls: "col-span-1 lg:col-span-2", kind: "logo", partner: "ilg" },
     { id: "parcels", cls: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", kind: "model", model: "parcels", bg: "bg-gradient-to-b from-[#dfe3f7] to-[#c5cbea]", tilt: 0.3 },
-    { id: "ultra", cls: "col-span-2 lg:col-span-2", kind: "logo", partner: "ultra" },
-    { id: "globe", cls: "col-span-2 lg:col-span-1", kind: "model", model: "globe", bg: "bg-gradient-to-br from-[#12123f] to-[#262a78]", tilt: 0.3 },
-    { id: "brand", cls: "col-span-2 lg:col-span-1", kind: "brand" },
-    { id: "poly", cls: "col-span-2 lg:col-span-1", kind: "logo", partner: "poly" },
-    { id: "dynamic", cls: "col-span-2 lg:col-span-1", kind: "logo", partner: "dynamic" },
+    { id: "ultra", cls: "col-span-1 lg:col-span-2", kind: "logo", partner: "ultra" },
+    { id: "globe", cls: "col-span-1 lg:col-span-1", kind: "model", model: "globe", bg: "bg-gradient-to-br from-[#12123f] to-[#262a78]", tilt: 0.3 },
+    { id: "brand", cls: "col-span-1 lg:col-span-1", kind: "brand" },
+    { id: "poly", cls: "col-span-1 lg:col-span-1", kind: "logo", partner: "poly" },
+    { id: "dynamic", cls: "col-span-1 lg:col-span-1", kind: "logo", partner: "dynamic" },
 ];
 
 const shell = "relative overflow-hidden rounded-[26px]";
@@ -41,7 +41,7 @@ export default function PartnersBento() {
                 Our <Hl>Trusted</Hl> Partners
             </SectionHeading>
 
-            <div className="mt-12 grid grid-flow-dense auto-rows-[112px] grid-cols-2 gap-3 sm:auto-rows-[140px] md:gap-4 lg:auto-rows-[170px] lg:grid-cols-6">
+            <div className="mt-12 grid grid-flow-dense auto-rows-[120px] grid-cols-2 gap-3 sm:auto-rows-[140px] md:gap-4 lg:auto-rows-[170px] lg:grid-cols-6">
                 {TILES.map((t) => {
                     if (t.kind === "logo") {
                         const { Logo, name } = partner(t.partner);
