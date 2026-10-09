@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { gsap } from "gsap";
 import { Home, Info, Briefcase, Heart, HelpCircle, Menu, X } from "lucide-react";
 import Logo from "@/usercomponents/Logo";
 
@@ -19,7 +18,6 @@ export default function Navbar() {
     const pathname = usePathname();
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const navRef = useRef<HTMLElement>(null);
 
     const isActive = (href: string) => pathname === href;
 
@@ -30,40 +28,27 @@ export default function Navbar() {
         return () => window.removeEventListener("scroll", onScroll);
     }, []);
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.fromTo("[data-nav-logo]", { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", clearProps: "all" });
-            gsap.fromTo(
-                "[data-nav-pill]",
-                { y: -24, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.7, stagger: 0.07, delay: 0.15, ease: "back.out(1.6)", clearProps: "all" },
-            );
-        }, navRef);
-        return () => ctx.revert();
-    }, []);
-
     return (
         <nav
-            ref={navRef}
             className={`sticky top-0 z-50 w-full transition-all duration-300 ${
                 scrolled ? "bg-[#eef0fb]/95 shadow-[0_8px_30px_-18px_rgba(18,18,63,0.35)]" : "bg-transparent"
             }`}
         >
             <div className="mx-auto flex h-[88px] max-w-[1600px] items-center justify-between px-5 md:px-8">
-                <Link href="/" data-nav-logo aria-label="GlobexiaCorp home" className="rounded-full bg-white/80 py-2 pl-3 pr-4 shadow-[0_8px_20px_-12px_rgba(18,18,63,0.5)]">
+                <Link href="/" style={{ animationDelay: "0s" }} aria-label="GlobexiaCorp home" className="nav-drop rounded-full bg-white/80 py-2 pl-3 pr-4 shadow-[0_8px_20px_-12px_rgba(18,18,63,0.5)]">
                     <Logo />
                 </Link>
 
                 {/* Desktop */}
                 <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 lg:flex">
-                    {navLinks.map(({ href, label, Icon }) => {
+                    {navLinks.map(({ href, label, Icon }, i) => {
                         const active = isActive(href);
                         return (
                             <Link
                                 key={href}
                                 href={href}
-                                data-nav-pill
-                                className={`group flex items-center gap-2 rounded-full border px-5 py-[11px] text-[14px] font-medium transition-all duration-300 ${
+                                style={{ animationDelay: `${0.1 + i * 0.07}s` }}
+                                className={`nav-drop group flex items-center gap-2 rounded-full border px-5 py-[11px] text-[14px] font-medium transition-all duration-300 ${
                                     active
                                         ? "border-[#12123f] bg-[#12123f] text-white shadow-[0_10px_24px_-10px_rgba(18,18,63,0.7)]"
                                         : "border-white bg-white/90 text-[#12123f] shadow-[0_8px_20px_-12px_rgba(18,18,63,0.5)] hover:-translate-y-0.5 hover:border-[#ff5a0a] hover:bg-white hover:text-[#ff5a0a]"
@@ -82,8 +67,7 @@ export default function Navbar() {
                     onClick={() => setMenuOpen((p) => !p)}
                     aria-label={menuOpen ? "Close menu" : "Open menu"}
                     aria-expanded={menuOpen}
-                    data-nav-pill
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-[#12123f]/25 bg-white/90 text-[#12123f] shadow-md lg:hidden"
+                    className="nav-drop flex h-11 w-11 items-center justify-center rounded-full border border-[#12123f]/25 bg-white/90 text-[#12123f] shadow-md lg:hidden"
                 >
                     {menuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>

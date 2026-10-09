@@ -61,7 +61,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     }
                     rightContent={
                         <p className="text-gray-color text-body">
-                            © 2025 - GlobexiaCorp. All rights reserved.
+                            © {new Date().getFullYear()} - GlobexiaCorp. All rights reserved.
                         </p>
                     }
                 />

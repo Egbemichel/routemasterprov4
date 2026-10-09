@@ -115,14 +115,16 @@ const HeroSection = () => {
                         }
                     />
                 </div>
-                <button
-                    type="button"
-                    data-cta
-                    className="flex items-center gap-2 rounded-full border border-[#12123f]/25 bg-white px-8 py-4 text-[16px] font-medium text-[#12123f] transition-all duration-300 hover:-translate-y-1 hover:border-[#12123f] hover:bg-[#12123f] hover:text-white active:scale-95"
-                >
-                    <Calculator size={20} />
-                    Get a Quote
-                </button>
+                {/* gsap animates this wrapper; the button keeps its own CSS transitions so the two never fight */}
+                <div data-cta>
+                    <button
+                        type="button"
+                        className="flex items-center gap-2 rounded-full border border-[#12123f]/25 bg-white px-8 py-4 text-[16px] font-medium text-[#12123f] transition-[background-color,color,border-color,transform] duration-300 hover:-translate-y-1 hover:border-[#12123f] hover:bg-[#12123f] hover:text-white active:scale-95"
+                    >
+                        <Calculator size={20} />
+                        Get a Quote
+                    </button>
+                </div>
             </div>
 
             {/* Floating UI cards */}

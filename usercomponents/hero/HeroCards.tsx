@@ -112,9 +112,13 @@ export function DeliveryCard({ className = "" }: { className?: string }) {
             </div>
             <p className="mt-3 text-[12px] font-medium text-[#12123f]">Receiver</p>
             <div className="mt-2 flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#ffb27a] to-[#ff5a0a] text-[14px] font-semibold text-white">
-                    EC
-                </span>
+                <Image
+                    src="/images/avatars/emily.png"
+                    alt="Emily Carter"
+                    width={44}
+                    height={44}
+                    className="h-11 w-11 rounded-full bg-[#eef0fb] object-cover"
+                />
                 <div className="flex-1 leading-tight">
                     <p className="text-[14px] font-medium text-[#12123f]">Emily Carter</p>
                     <p className="text-[12px] text-[#12123f]/50">+1 415 782 6384</p>

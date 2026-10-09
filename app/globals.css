@@ -69,3 +69,15 @@
   --color-warning: oklch(0.81 0.166182 82.7023);
   --color-info: oklch(0.63 0.18 259.96);
 }
+
+/* Navbar entrance: pure CSS so it never depends on main-thread timing */
+@keyframes nav-drop {
+  from { opacity: 0; transform: translateY(-22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.nav-drop {
+  animation: nav-drop 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-drop { animation: none; }
+}
