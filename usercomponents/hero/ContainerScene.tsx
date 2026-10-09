@@ -147,7 +147,7 @@ export default function ContainerScene() {
         } catch {
             return; // no WebGL: the hero still reads fine without the 3D backdrop
         }
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.05;
         renderer.domElement.style.cssText = "display:block;width:100%;height:100%";
@@ -231,7 +231,7 @@ export default function ContainerScene() {
             aspect = w / h;
             renderer.setSize(w, h, false);
             camera.aspect = aspect;
-            const dist = aspect > 1.5 ? 13.5 : 13.5 + (1.5 - aspect) * 10; // portrait: pull back so the load fits
+            const dist = aspect > 1.5 ? 16 : 16 + (1.5 - aspect) * 10; // portrait: pull back so the load fits
             camera.position.set(0, 1.4, dist);
             camera.lookAt(0, 0.6, 0);
             camera.updateProjectionMatrix();

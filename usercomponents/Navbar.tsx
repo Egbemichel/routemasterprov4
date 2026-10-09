@@ -32,15 +32,12 @@ export default function Navbar() {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from("[data-nav-logo]", { y: -24, opacity: 0, duration: 0.8, ease: "power3.out" });
-            gsap.from("[data-nav-pill]", {
-                y: -24,
-                opacity: 0,
-                duration: 0.7,
-                stagger: 0.07,
-                delay: 0.15,
-                ease: "back.out(1.6)",
-            });
+            gsap.fromTo("[data-nav-logo]", { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", clearProps: "all" });
+            gsap.fromTo(
+                "[data-nav-pill]",
+                { y: -24, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.7, stagger: 0.07, delay: 0.15, ease: "back.out(1.6)", clearProps: "all" },
+            );
         }, navRef);
         return () => ctx.revert();
     }, []);
@@ -53,7 +50,7 @@ export default function Navbar() {
             }`}
         >
             <div className="mx-auto flex h-[88px] max-w-[1600px] items-center justify-between px-5 md:px-8">
-                <Link href="/" data-nav-logo aria-label="GlobexiaCorp home">
+                <Link href="/" data-nav-logo aria-label="GlobexiaCorp home" className="rounded-full bg-white/80 py-2 pl-3 pr-4 shadow-[0_8px_20px_-12px_rgba(18,18,63,0.5)] backdrop-blur-md">
                     <Logo />
                 </Link>
 
@@ -69,7 +66,7 @@ export default function Navbar() {
                                 className={`group flex items-center gap-2 rounded-full border px-5 py-[11px] text-[14px] font-medium transition-all duration-300 ${
                                     active
                                         ? "border-[#12123f] bg-[#12123f] text-white shadow-[0_10px_24px_-10px_rgba(18,18,63,0.7)]"
-                                        : "border-[#12123f]/25 bg-white/30 text-[#12123f] hover:-translate-y-0.5 hover:border-[#ff5a0a] hover:bg-white hover:text-[#ff5a0a]"
+                                        : "border-white bg-white/90 text-[#12123f] shadow-[0_8px_20px_-12px_rgba(18,18,63,0.5)] backdrop-blur-md hover:-translate-y-0.5 hover:border-[#ff5a0a] hover:bg-white hover:text-[#ff5a0a]"
                                 }`}
                             >
                                 {active && <Icon size={16} strokeWidth={2} />}
@@ -86,7 +83,7 @@ export default function Navbar() {
                     aria-label={menuOpen ? "Close menu" : "Open menu"}
                     aria-expanded={menuOpen}
                     data-nav-pill
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-[#12123f]/25 bg-white/60 text-[#12123f] lg:hidden"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-[#12123f]/25 bg-white/90 text-[#12123f] shadow-md lg:hidden"
                 >
                     {menuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
