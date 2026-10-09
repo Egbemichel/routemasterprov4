@@ -421,7 +421,7 @@ const Orders = () => {
       },
 
       business: {
-        name: "RouteMasterPro",
+        name: "GlobexiaCorp",
         email: "routemasterpro899@gmail.com",
         website: "www.routemasterglobal.com",
       },

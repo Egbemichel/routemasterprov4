@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Navbar from '@/usercomponents/Navbar';
 import Footer from '@/usercomponents/Footer';
-import Image from 'next/image';
+import Logo from '@/usercomponents/Logo';
 import React from 'react';
 import FaviconSwitcher from '@/usercomponents/FaviconSwitcher';
 
@@ -57,16 +57,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             {showNavFooter && (
                 <Footer
                     leftContent={
-                        <Image
-                            src="/icons/logo-black.svg"
-                            alt="RouteMasterPro Logo"
-                            width={143}
-                            height={40}
-                        />
+                        <Logo />
                     }
                     rightContent={
                         <p className="text-gray-color text-body">
-                            © 2025 - RouteMasterPro. All rights reserved.
+                            © 2025 - GlobexiaCorp. All rights reserved.
                         </p>
                     }
                 />

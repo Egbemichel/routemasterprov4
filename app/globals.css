@@ -16,6 +16,7 @@
 @theme {
   /* === Font Families === */
   --font-archivo: 'Archivo', sans-serif;
+  --font-display: var(--font-display), "Inter", sans-serif;
   --font-pilcrow: 'Pilcrow Rounded', sans-serif;
 
   /* === Font Sizes === */

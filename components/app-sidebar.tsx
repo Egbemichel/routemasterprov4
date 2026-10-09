@@ -36,7 +36,7 @@ export function AppSidebar({ onChangeViewAction, renderedComponentAction }: AppS
           <SidebarContent>
             <SidebarGroup title="Admin Panel">
               <SidebarGroupLabel className="text-secondary-100">
-                RouteMasterPro
+                GlobexiaCorp
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>

@@ -1,128 +1,113 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import MenuIcon from '../public/icons/menu-collapse.svg';
-import XIcon from '../public/icons/cancel-01.svg';
+import { gsap } from "gsap";
+import { Home, Info, Briefcase, Heart, HelpCircle, Menu, X } from "lucide-react";
+import Logo from "@/usercomponents/Logo";
 
 const navLinks = [
-    { href: "/", label: "Home", icon: "/icons/home-01.svg" },
-    { href: "/about", label: "About", icon: "/icons/information-circle.svg" },
-    { href: "/services", label: "Services", icon: "/icons/customer-service-02.svg" },
+    { href: "/", label: "Home", Icon: Home },
+    { href: "/about", label: "About", Icon: Info },
+    { href: "/services", label: "Services", Icon: Briefcase },
+    { href: "/testimonials", label: "Testimonials", Icon: Heart },
+    { href: "/faq", label: "FAQ", Icon: HelpCircle },
 ];
 
 export default function Navbar() {
     const pathname = usePathname();
     const [menuOpen, setMenuOpen] = useState(false);
-    const toggleMenu = () => setMenuOpen((prev) => !prev);
+    const [scrolled, setScrolled] = useState(false);
+    const navRef = useRef<HTMLElement>(null);
 
     const isActive = (href: string) => pathname === href;
 
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 24);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            gsap.from("[data-nav-logo]", { y: -24, opacity: 0, duration: 0.8, ease: "power3.out" });
+            gsap.from("[data-nav-pill]", {
+                y: -24,
+                opacity: 0,
+                duration: 0.7,
+                stagger: 0.07,
+                delay: 0.15,
+                ease: "back.out(1.6)",
+            });
+        }, navRef);
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <nav className="sticky top-0 left-0 right-0 z-50 w-full bg-primary-200 px-6 md:px-[100px] py-[16px] flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-                <Image
-                    src="/icons/logo-orange.svg"
-                    alt="RouteMasterPro logo"
-                    width={143}
-                    height={40}
-                    className="h-auto"
-                />
-            </div>
+        <nav
+            ref={navRef}
+            className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+                scrolled ? "bg-[#eef0fb]/75 backdrop-blur-md shadow-[0_8px_30px_-18px_rgba(18,18,63,0.35)]" : "bg-transparent"
+            }`}
+        >
+            <div className="mx-auto flex h-[88px] max-w-[1600px] items-center justify-between px-5 md:px-8">
+                <Link href="/" data-nav-logo aria-label="GlobexiaCorp home">
+                    <Logo />
+                </Link>
 
-            {/* Desktop Nav */}
-            <div className="hidden sm:flex items-center justify-between w-full">
-                <div className="flex items-center space-x-4 mx-auto">
-                    {navLinks.map(({ href, label, icon }) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            className={`flex items-center space-x-1 px-[16px] py-[8px] rounded-[16px] gap-[10px] transition font-pilcrow text-[14px] ${
-                                isActive(href)
-                                    ? "bg-[#415078] text-white-color"
-                                    : "text-gray-color hover:text-white-color"
-                            }`}
-                        >
-                            <Image src={icon} alt={`${label} Icon`} width={24} height={24} />
-                            <span>{label}</span>
-                        </Link>
-                    ))}
+                {/* Desktop */}
+                <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 lg:flex">
+                    {navLinks.map(({ href, label, Icon }) => {
+                        const active = isActive(href);
+                        return (
+                            <Link
+                                key={href}
+                                href={href}
+                                data-nav-pill
+                                className={`group flex items-center gap-2 rounded-full border px-5 py-[11px] text-[14px] font-medium transition-all duration-300 ${
+                                    active
+                                        ? "border-[#12123f] bg-[#12123f] text-white shadow-[0_10px_24px_-10px_rgba(18,18,63,0.7)]"
+                                        : "border-[#12123f]/25 bg-white/30 text-[#12123f] hover:-translate-y-0.5 hover:border-[#ff5a0a] hover:bg-white hover:text-[#ff5a0a]"
+                                }`}
+                            >
+                                {active && <Icon size={16} strokeWidth={2} />}
+                                <span>{label}</span>
+                            </Link>
+                        );
+                    })}
                 </div>
 
-                {/* Sign In */}
-                <div className='flex items-center gap-[30px]'>
-                    <div className="flex items-center">
-                        <Link
-                            href="/testimonials"
-                            className={`flex items-center text-white-color px-[16px] py-[8px] rounded-[16px] bg-primary-100 hover:bg-blue-700 transition gap-[10px] ${
-                                isActive("/testimonials") ? "ring-2 ring-[#E4EDFF] ring-opacity-40" : ""
-                            }`}
-                        >
-                            <Image src="/icons/in-love.svg" alt="Sign In Icon" width={24} height={24} />
-                            <span className="text-neutral-50">Testimonials</span>
-                        </Link>
-                    </div>
-                    <div className="flex items-center">
-                        <Link
-                            href="/faq"
-                            className={`flex items-center text-white-color px-[16px] py-[8px] rounded-[16px] bg-primary-100 hover:bg-blue-700 transition gap-[10px] ${
-                                isActive("/faq") ? "ring-2 ring-[#E4EDFF] ring-opacity-40" : ""
-                            }`}
-                        >
-                            <Image src="/icons/message-question.svg" alt="Sign In Icon" width={24} height={24} />
-                            <span className="text-neutral-50">FAQ</span>
-                        </Link>
-                    </div>
-                </div>
-                </div>
-
-            {/* Mobile Menu Toggle */}
-            <div className="sm:hidden">
-                <button onClick={toggleMenu}>
-                    <Image src={menuOpen ? XIcon : MenuIcon} alt="Menu Toggle" width={24} height={24} />
+                {/* Mobile toggle */}
+                <button
+                    type="button"
+                    onClick={() => setMenuOpen((p) => !p)}
+                    aria-label={menuOpen ? "Close menu" : "Open menu"}
+                    aria-expanded={menuOpen}
+                    data-nav-pill
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-[#12123f]/25 bg-white/60 text-[#12123f] lg:hidden"
+                >
+                    {menuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
             </div>
 
-            {/* Mobile Sidebar */}
+            {/* Mobile panel */}
             {menuOpen && (
-                <div className="sm:hidden fixed top-16 left-0 right-0 bg-primary-200 text-white-color flex flex-col space-y-4 px-6 py-4 shadow-md z-40 animate-slide-down">
-                    {navLinks.map(({ href, label, icon }) => (
+                <div className="mx-4 flex flex-col gap-2 rounded-3xl border border-white/70 bg-white/85 p-4 shadow-xl backdrop-blur-md lg:hidden">
+                    {navLinks.map(({ href, label, Icon }) => (
                         <Link
                             key={href}
                             href={href}
-                            onClick={toggleMenu}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-[12px] ${
-                                isActive(href) ? "bg-[#415078] text-white-color" : "text-gray-color hover:text-white-color"
+                            onClick={() => setMenuOpen(false)}
+                            className={`flex items-center gap-3 rounded-full px-5 py-3 text-[15px] font-medium ${
+                                isActive(href) ? "bg-[#12123f] text-white" : "text-[#12123f] hover:bg-[#12123f]/5"
                             }`}
                         >
-                            <Image src={icon} alt={`${label} Icon`} width={24} height={24} />
-                            <span>{label}</span>
+                            <Icon size={18} />
+                            {label}
                         </Link>
                     ))}
-
-                    <Link
-                        href="/testimonials"
-                        onClick={toggleMenu}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-[12px] ${
-                            isActive("/login") ? "bg-[#E4EDFF] opacity-[20%]" : ""
-                        }`}
-                    >
-                        <Image src="/icons/in-love.svg" alt="Testimonial Icon" width={24} height={24} />
-                        <span>Testimonials</span>
-                    </Link>
-                    <Link
-                        href="/faq"
-                        onClick={toggleMenu}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-[12px] ${
-                            isActive("/login") ? "bg-[#E4EDFF] opacity-[20%]" : ""
-                        }`}
-                    >
-                        <Image src="/icons/message-question.svg" alt="FAQ Icon" width={24} height={24} />
-                        <span>Faq</span>
-                    </Link>
                 </div>
             )}
         </nav>
