@@ -6,7 +6,7 @@ import { ArrowRight, Copy, FileDown, Package, Pencil, Plus, SlidersHorizontal, T
 import { db } from "@/lib/firebaseClient";
 import { useAdminData } from "@/components/admin/AdminData";
 import { useToaster } from "@/components/admin/Toaster";
-import { matchesTerms, norm, searchOrders } from "@/components/admin/search";
+import { SCOPE_LABELS, SearchScope, matchesTerms, norm, searchOrders } from "@/components/admin/search";
 import { generateReceipt } from "@/components/admin/receipt";
 import OrderForm from "@/components/admin/OrderForm";
 import OrderDetails from "@/components/admin/OrderDetails";
@@ -49,6 +49,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
     const { toast, confirm } = useToaster();
 
     const [query, setQuery] = useState("");
+    const [scope, setScope] = useState<SearchScope>("all");
     const [status, setStatus] = useState<string>("all");
     const [carrier, setCarrier] = useState("all");
     const [type, setType] = useState("all");
@@ -66,6 +67,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
         if (!intent.nonce) return;
         if (intent.query !== undefined) {
             setQuery(intent.query);
+            setScope("all");
             setStatus("all");
             setCarrier("all");
             setType("all");
@@ -89,7 +91,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
     }, [packages]);
 
     const filtered = useMemo(() => {
-        let list = searchOrders(packages, query, carrierName);
+        let list = searchOrders(packages, query, carrierName, scope);
         if (status !== "all") list = list.filter((p) => (p.status || "").toLowerCase() === status);
         if (carrier !== "all") list = list.filter((p) => p.carrierId === carrier);
         if (type !== "all") list = list.filter((p) => p.deliveryType === type);
@@ -110,9 +112,9 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
                 sorted.sort((a, b) => date(b).localeCompare(date(a)));
         }
         return sorted;
-    }, [packages, query, status, carrier, type, mode, sort, carrierName]);
+    }, [packages, query, scope, status, carrier, type, mode, sort, carrierName]);
 
-    const paged = usePaged(filtered, pageSize, `${query}|${status}|${carrier}|${type}|${mode}|${sort}`);
+    const paged = usePaged(filtered, pageSize, `${query}|${scope}|${status}|${carrier}|${type}|${mode}|${sort}`);
     const detail = packages.find((p) => p.id === detailId) || null;
     const activeFilters = [carrier, type, mode].filter((v) => v !== "all").length;
 
@@ -180,7 +182,14 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
             {/* toolbar */}
             <div className="mb-4 space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row">
-                    <SearchInput value={query} onChange={setQuery} placeholder="Search tracking no., name, email…" className="flex-1" />
+                    <SearchInput value={query} onChange={setQuery} placeholder={scope === "all" ? "Search tracking no., name, email…" : `Search by ${SCOPE_LABELS[scope].toLowerCase()}…`} className="flex-1" />
+                    <select aria-label="Search in" value={scope} onChange={(e) => setScope(e.target.value as SearchScope)} className={cn(inputCls, "sm:w-[190px]")}>
+                        {(Object.keys(SCOPE_LABELS) as SearchScope[]).map((k) => (
+                            <option key={k} value={k}>
+                                {k === "all" ? "Search in: Everything" : SCOPE_LABELS[k]}
+                            </option>
+                        ))}
+                    </select>
                     <div className="flex gap-2">
                         <select aria-label="Sort orders" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={cn(inputCls, "w-full sm:w-[190px]")}>
                             <option value="date-desc">Delivery: latest first</option>
@@ -268,6 +277,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
                                 <GhostButton
                                     onClick={() => {
                                         setQuery("");
+                                        setScope("all");
                                         setStatus("all");
                                         setCarrier("all");
                                         setType("all");

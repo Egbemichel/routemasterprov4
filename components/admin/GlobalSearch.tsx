@@ -2,9 +2,9 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ArrowRight, CornerDownLeft, LayoutDashboard, LogOut, Package, PlusCircle, Search, Truck, X } from "lucide-react";
+import { ArrowRight, CornerDownLeft, LayoutDashboard, LogOut, Package, PlusCircle, Search, Truck, User, X } from "lucide-react";
 import { useAdminData } from "@/components/admin/AdminData";
-import { matchesTerms, norm, searchCouriers, searchOrders } from "@/components/admin/search";
+import { matchesTerms, norm, searchCouriers, searchOrders, searchPeople } from "@/components/admin/search";
 import { StatusBadge } from "@/components/admin/ui";
 import { AdminView } from "@/app/types/view";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 type Item =
     | { kind: "page"; id: string; label: string; hint: string; Icon: React.ComponentType<{ size?: number; className?: string }>; run: () => void }
     | { kind: "order"; id: string; tn: string; name: string; status?: string; route: string; run: () => void }
+    | { kind: "person"; id: string; name: string; detail: string; run: () => void }
     | { kind: "courier"; id: string; name: string; run: () => void }
     | { kind: "all"; id: string; label: string; run: () => void };
 
@@ -83,6 +84,15 @@ export default function GlobalSearch({
         if (trimmed && orderMatches.length > 6) {
             orders.push({ kind: "all", id: "o-all", label: `See all ${orderMatches.length} orders matching “${trimmed}”`, run: act(() => onSeeAllOrders(trimmed)) });
         }
+        const people: Item[] = searchPeople(packages, trimmed)
+            .slice(0, 4)
+            .map((p) => ({
+                kind: "person" as const,
+                id: `n-${p.name}`,
+                name: p.name,
+                detail: [p.asReceiver ? `${p.asReceiver} as receiver` : "", p.asSender ? `${p.asSender} as sender` : ""].filter(Boolean).join(" · "),
+                run: act(() => onSeeAllOrders(p.name)),
+            }));
         const couriersFound: Item[] = (trimmed ? searchCouriers(couriers, trimmed) : []).slice(0, 4).map((c) => ({
             kind: "courier",
             id: `c-${c.id}`,
@@ -92,6 +102,7 @@ export default function GlobalSearch({
 
         return [
             { title: "Pages & actions", items: filteredPages },
+            { title: "People", items: people },
             { title: trimmed ? "Orders" : "Recent orders", items: orders },
             { title: "Couriers", items: couriersFound },
         ].filter((s) => s.items.length > 0);
@@ -134,7 +145,7 @@ export default function GlobalSearch({
                             autoFocus
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
-                            placeholder="Search orders, tracking numbers, people, couriers, pages…"
+                            placeholder="Search names, tracking numbers, couriers, pages…"
                             className="h-11 w-full bg-transparent text-[16px] text-[#12123f] outline-none placeholder:text-[#12123f]/40"
                             aria-label="Search"
                         />
@@ -189,6 +200,18 @@ export default function GlobalSearch({
                                                             </span>
                                                         </span>
                                                         <StatusBadge status={it.status} className="hidden sm:inline-flex" />
+                                                    </>
+                                                )}
+                                                {it.kind === "person" && (
+                                                    <>
+                                                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#12123f]/8 text-[#12123f]">
+                                                            <User size={18} />
+                                                        </span>
+                                                        <span className="min-w-0 flex-1">
+                                                            <span className="block truncate text-[14px] font-semibold text-[#12123f]">{it.name}</span>
+                                                            <span className="block text-[12px] text-[#12123f]/50">{it.detail}</span>
+                                                        </span>
+                                                        <ArrowRight size={15} className="shrink-0 text-[#ff5a0a]" />
                                                     </>
                                                 )}
                                                 {it.kind === "courier" && (
