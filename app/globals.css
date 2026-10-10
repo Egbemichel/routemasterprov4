@@ -81,3 +81,11 @@
 @media (prefers-reduced-motion: reduce) {
   .nav-drop { animation: none; }
 }
+
+/* tracking page: the little truck drives along the journey line */
+@keyframes track-drive {
+  0%   { left: 0%;  transform: translateY(-50%) scaleX(1); }
+  48%  { left: calc(100% - 26px); transform: translateY(-50%) scaleX(1); }
+  52%  { left: calc(100% - 26px); transform: translateY(-50%) scaleX(-1); }
+  100% { left: 0%;  transform: translateY(-50%) scaleX(-1); }
+}
