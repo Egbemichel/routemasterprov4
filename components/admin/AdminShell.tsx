@@ -173,10 +173,10 @@ function Shell() {
     );
 }
 
-export default function AdminShell() {
+export default function AdminShell({ mock }: { mock?: React.ComponentProps<typeof AdminDataProvider>["mock"] }) {
     return (
         <ToasterProvider>
-            <AdminDataProvider>
+            <AdminDataProvider mock={mock}>
                 <Shell />
             </AdminDataProvider>
         </ToasterProvider>

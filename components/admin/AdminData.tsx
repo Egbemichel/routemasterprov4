@@ -24,28 +24,30 @@ export const useAdminData = () => {
 };
 
 /** Loads packages and couriers once and shares them with every admin view and the global search. */
-export function AdminDataProvider({ children }: { children: React.ReactNode }) {
-    const [packages, setPackages] = useState<PackageData[]>([]);
-    const [couriers, setCouriers] = useState<Courier[]>([]);
-    const [loading, setLoading] = useState(true);
+export function AdminDataProvider({ children, mock }: { children: React.ReactNode; mock?: { packages: PackageData[]; couriers: Courier[] } }) {
+    const [packages, setPackages] = useState<PackageData[]>(mock?.packages ?? []);
+    const [couriers, setCouriers] = useState<Courier[]>(mock?.couriers ?? []);
+    const [loading, setLoading] = useState(!mock);
 
     const refreshPackages = useCallback(async () => {
+        if (mock) return; // preview / test mode: no network
         try {
             const snapshot = await getDocs(collection(db, "packages"));
             setPackages(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as PackageData[]);
         } catch (error) {
             console.error("Error fetching packages:", error);
         }
-    }, []);
+    }, [mock]);
 
     const refreshCouriers = useCallback(async () => {
+        if (mock) return;
         try {
             const snapshot = await getDocs(collection(db, "couriers"));
             setCouriers(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Courier, "id">) })));
         } catch (error) {
             console.error("Error fetching couriers:", error);
         }
-    }, []);
+    }, [mock]);
 
     useEffect(() => {
         let alive = true;

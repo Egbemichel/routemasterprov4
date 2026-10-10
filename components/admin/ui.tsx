@@ -176,6 +176,9 @@ export function Sheet({
                         <>
                             <Dialog.Title className="sr-only">{title}</Dialog.Title>
                             <Dialog.Description className="sr-only">Navigation</Dialog.Description>
+                            <Dialog.Close className="absolute right-4 top-6 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20" aria-label="Close menu">
+                                <X size={18} />
+                            </Dialog.Close>
                             <div className="min-h-0 flex-1">{children}</div>
                         </>
                     ) : (

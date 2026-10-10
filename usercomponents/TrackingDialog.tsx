@@ -9,9 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from "firebase/firestore";
 import { AlertCircle, Loader2, PackageSearch, Search } from "lucide-react";
-import { db } from "@/lib/firebaseClient";
 
 interface Props {
     trigger: React.ReactNode;
@@ -35,6 +33,8 @@ export default function TrackingDialog({ trigger }: Props) {
         setChecking(true);
         try {
             // make sure the number exists before sending the visitor to the tracking page
+            // Firebase is loaded on demand so it never weighs down the public pages
+            const [{ doc, getDoc }, { db }] = await Promise.all([import("firebase/firestore"), import("@/lib/firebaseClient")]);
             const candidates = Array.from(new Set([tn, tn.toUpperCase()]));
             let found: string | null = null;
             for (const c of candidates) {

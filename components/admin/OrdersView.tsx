@@ -6,7 +6,7 @@ import { ArrowRight, Copy, FileDown, Package, Pencil, Plus, SlidersHorizontal, T
 import { db } from "@/lib/firebaseClient";
 import { useAdminData } from "@/components/admin/AdminData";
 import { useToaster } from "@/components/admin/Toaster";
-import { searchOrders } from "@/components/admin/search";
+import { matchesTerms, norm, searchOrders } from "@/components/admin/search";
 import { generateReceipt } from "@/components/admin/receipt";
 import OrderForm from "@/components/admin/OrderForm";
 import OrderDetails from "@/components/admin/OrderDetails";
@@ -29,6 +29,20 @@ import {
 import { cn } from "@/lib/utils";
 
 type SortKey = "date-desc" | "date-asc" | "name" | "tracking";
+
+/** When a search matches only the sender's details, show them so the match is never a mystery. */
+const SenderHint = ({ p, query }: { p: PackageData; query: string }) => {
+    if (!query.trim()) return null;
+    const receiver = norm([p.receiverName, p.receiverEmail, p.trackingNumber, p.id].join(" "));
+    const sender = norm([p.senderName, p.senderEmail, p.senderPhone, p.senderAddress].join(" "));
+    const terms = norm(query).split(/\s+/).filter(Boolean);
+    if (!terms.some((t) => sender.includes(t) && !receiver.includes(t)) && !matchesTerms(sender, query)) return null;
+    return (
+        <p className="mt-0.5 text-[11px] text-[#ff5a0a]">
+            Sender: <Hl text={p.senderName || p.senderEmail} query={query} />
+        </p>
+    );
+};
 
 export default function OrdersView({ intent }: { intent: AdminIntent }) {
     const { packages, couriers, loading, carrierName, removePackageLocal } = useAdminData();
@@ -157,7 +171,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
                 title="Orders"
                 subtitle={`${packages.length} package${packages.length === 1 ? "" : "s"} in total`}
                 actions={
-                    <PrimaryButton onClick={openNew}>
+                    <PrimaryButton onClick={openNew} className="sm:hidden">
                         <Plus size={18} /> New order
                     </PrimaryButton>
                 }
@@ -166,7 +180,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
             {/* toolbar */}
             <div className="mb-4 space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row">
-                    <SearchInput value={query} onChange={setQuery} placeholder="Search tracking number, name, email, phone, address, carrier…" className="flex-1" />
+                    <SearchInput value={query} onChange={setQuery} placeholder="Search tracking no., name, email…" className="flex-1" />
                     <div className="flex gap-2">
                         <select aria-label="Sort orders" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={cn(inputCls, "w-full sm:w-[190px]")}>
                             <option value="date-desc">Delivery: latest first</option>
@@ -296,6 +310,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
                                                 <p className="text-[12px] text-[#12123f]/50">
                                                     <Hl text={p.receiverEmail} query={query} />
                                                 </p>
+                                                <SenderHint p={p} query={query} />
                                             </td>
                                             <td className="px-3 py-4 text-[13px] text-[#12123f]/75">
                                                 <span className="inline-flex max-w-[210px] items-center gap-1.5">
@@ -304,7 +319,9 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
                                                     <span className="truncate">{p.destination}</span>
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-4 text-[13px] text-[#12123f]/75">{carrierName(p.carrierId)}</td>
+                                            <td className="px-3 py-4 text-[13px] text-[#12123f]/75">
+                                                <Hl text={carrierName(p.carrierId)} query={query} />
+                                            </td>
                                             <td className="px-3 py-4">
                                                 <StatusBadge status={p.status} />
                                             </td>
@@ -348,6 +365,7 @@ export default function OrdersView({ intent }: { intent: AdminIntent }) {
                                                     <span className="block truncate text-[14px] font-medium text-[#12123f]">
                                                         <Hl text={p.receiverName} query={query} />
                                                     </span>
+                                                    <SenderHint p={p} query={query} />
                                                 </span>
                                             </span>
                                             <StatusBadge status={p.status} />

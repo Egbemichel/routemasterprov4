@@ -102,7 +102,7 @@ export default function DashboardOverview({
                 title="Dashboard"
                 subtitle="A quick look at your shipments."
                 actions={
-                    <PrimaryButton onClick={newOrder}>
+                    <PrimaryButton onClick={newOrder} className="sm:hidden">
                         <Plus size={18} /> New order
                     </PrimaryButton>
                 }

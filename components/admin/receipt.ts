@@ -70,7 +70,7 @@ const clip = (d: jsPDF, s: string, w: number, maxLines = 2) => {
 };
 
 /** Builds and downloads the branded shipping receipt for a package. */
-export async function generateReceipt(pkg: PackageData, carrierName: string) {
+export async function generateReceipt(pkg: PackageData, carrierName: string, opts: { preview?: boolean } = {}) {
     const { jsPDF } = await import("jspdf");
     const JsBarcode = (await import("jsbarcode")).default;
     const d = new jsPDF({ unit: "mm", format: "a4", compress: true });
@@ -88,8 +88,6 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     // decorative circles
     fill(d, [30, 30, 88]);
     d.circle(W - 8, -4, 30, "F");
-    fill(d, [255, 90, 10]);
-    d.circle(W - 4, 50, 3, "F");
 
     drawLogo(d, M + 8, 22, 8);
     d.setFont("helvetica", "bold");
@@ -111,7 +109,7 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     d.text(`Issued ${new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}`, W - M, 26, { align: "right" });
 
     /* ---------------- tracking card ---------------- */
-    let y = 56;
+    let y = 54;
     fill(d, WHITE);
     stroke(d, [222, 225, 242]);
     d.setLineWidth(0.4);
@@ -152,7 +150,7 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     }
 
     /* ---------------- route strip ---------------- */
-    y += 48;
+    y += 46;
     const midY = y + 9;
     const colW = (W - 2 * M - 16) / 2;
     const arrowX1 = M + colW * 0.55 + 4;
@@ -176,7 +174,7 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     d.circle(arrowX1 - 1, midY - 1.2, 1.3, "F");
 
     /* ---------------- sender / receiver ---------------- */
-    y += 20;
+    y += 19;
     const boxW = (W - 2 * M - 6) / 2;
     const party = (x: number, title: string, p: { name: string; address: string; phone: string; email: string }) => {
         fill(d, LAV);
@@ -201,7 +199,7 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     party(M + boxW + 6, "RECEIVER", { name: pkg.receiverName, address: pkg.receiverAddress, phone: pkg.receiverPhone, email: pkg.receiverEmail });
 
     /* ---------------- shipment details ---------------- */
-    y += 56;
+    y += 54;
     d.setFont("helvetica", "bold");
     d.setFontSize(9);
     text(d, NAVY);
@@ -239,7 +237,7 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     });
 
     /* ---------------- comment ---------------- */
-    y += 50;
+    y += 46;
     fill(d, LAV);
     d.roundedRect(M, y, W - 2 * M, 20, 4, 4, "F");
     d.setFont("helvetica", "bold");
@@ -252,7 +250,7 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     d.text(clip(d, pkg.comment || "No comment provided.", W - 2 * M - 12, 2), M + 6, y + 13);
 
     /* ---------------- signatures ---------------- */
-    y += 42;
+    y += 34;
     const sigW = (W - 2 * M - 14) / 2;
     [["Receiver's signature", M], ["Agency's signature", M + sigW + 14]].forEach(([label, x]) => {
         stroke(d, NAVY);
@@ -281,5 +279,6 @@ export async function generateReceipt(pkg: PackageData, carrierName: string) {
     d.text("routemasterpro899@gmail.com   |   www.routemasterglobal.com", W - M, H - 12, { align: "right" });
     d.text(`Track online: ${window.location.origin}/track/${tn}`, W - M, H - 7.5, { align: "right" });
 
+    if (opts.preview) return d.output("datauristring");
     d.save(`Receipt_${tn}.pdf`);
 }
